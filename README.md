@@ -13,26 +13,6 @@ This project integrates the UKAN semantic segmentation model and YOLO object det
 - `scale_detector_kan.pth` - Pre-trained weights for scale bar detection model
 - `Particle Analysis Usage Instructions.md` - Detailed usage guidelines
 
-## Usage
-
-### 1. Run Particle Analysis
-```bash
-python particle_analysis_demo.py --image path/to/your/image.jpg --method ukan
-
-### 2. View UKAN Inference Results
-```bash
-python view_results.py --image path/to/your/image.jpg
-```
-
-### 3. Run Only UKAN Inference
-```bash
-python ukan_inference.py --image path/to/your/image.jpg
-```
-
-Detection Method Selection
---method ukan: Use UKAN semantic segmentation model
---method yolo: Use YOLO object detection model
---method auto: Auto-selection (UKAN is used by default)
 
 ## Key Features
 
