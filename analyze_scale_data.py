@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-分析比例尺数据分布和特征
+Analyze scale bar data distribution and features
 """
 
 import pandas as pd
@@ -11,33 +11,33 @@ import cv2
 import os
 
 def analyze_scale_data():
-    """分析比例尺数据"""
-    print("🔍 分析比例尺数据分布")
+    """Analyze scale bar data"""
+    print(" Analyzing scale bar data distribution")
     print("="*50)
     
-    # 读取数据
+    # Read data
     df = pd.read_csv('scale_bar_labels_fixed.csv')
     
-    # 计算比例尺长度
+    # Calculate scale bar length
     df['scale_length'] = abs(df['x2'] - df['x1'])
     
-    print(f"📊 数据统计:")
-    print(f"   总样本数: {len(df)}")
-    print(f"   平均长度: {df['scale_length'].mean():.2f} 像素")
-    print(f"   标准差: {df['scale_length'].std():.2f} 像素")
-    print(f"   最小长度: {df['scale_length'].min():.0f} 像素")
-    print(f"   最大长度: {df['scale_length'].max():.0f} 像素")
-    print(f"   中位数: {df['scale_length'].median():.2f} 像素")
+    print(f"   Data Statistics:")
+    print(f"   Total samples: {len(df)}")
+    print(f"   Average length: {df['scale_length'].mean():.2f} pixels")
+    print(f"   Standard deviation: {df['scale_length'].std():.2f} pixels")
+    print(f"   Minimum length: {df['scale_length'].min():.0f} pixels")
+    print(f"   Maximum length: {df['scale_length'].max():.0f} pixels")
+    print(f"   Median: {df['scale_length'].median():.2f} pixels")
     
-    # 长度分布
-    print(f"\n📏 长度分布:")
+    # Length distribution
+    print(f"\n Length Distribution:")
     length_ranges = [
-        (0, 50, "0-50像素"),
-        (50, 100, "50-100像素"),
-        (100, 200, "100-200像素"),
-        (200, 500, "200-500像素"),
-        (500, 1000, "500-1000像素"),
-        (1000, float('inf'), "1000+像素")
+        (0, 50, "0-50 pixels"),
+        (50, 100, "50-100 pixels"),
+        (100, 200, "100-200 pixels"),
+        (200, 500, "200-500 pixels"),
+        (500, 1000, "500-1000 pixels"),
+        (1000, float('inf'), "1000+ pixels")
     ]
     
     for min_len, max_len, label in length_ranges:
@@ -46,10 +46,10 @@ def analyze_scale_data():
         else:
             count = len(df[(df['scale_length'] >= min_len) & (df['scale_length'] < max_len)])
         percentage = (count / len(df)) * 100
-        print(f"   {label}: {count} 个 ({percentage:.1f}%)")
+        print(f"   {label}: {count} samples ({percentage:.1f}%)")
     
-    # 分析图像尺寸
-    print(f"\n🖼️ 图像尺寸分析:")
+    # Analyze image dimensions
+    print(f"\n Image Dimension Analysis:")
     img_dir = 'inputs/lizi/images'
     sample_images = df['filename'].head(20).tolist()
     
@@ -66,61 +66,61 @@ def analyze_scale_data():
                 heights.append(h)
     
     if widths:
-        print(f"   平均宽度: {np.mean(widths):.0f} 像素")
-        print(f"   平均高度: {np.mean(heights):.0f} 像素")
-        print(f"   宽度范围: {min(widths)} - {max(widths)} 像素")
-        print(f"   高度范围: {min(heights)} - {max(heights)} 像素")
+        print(f"   Average width: {np.mean(widths):.0f} pixels")
+        print(f"   Average height: {np.mean(heights):.0f} pixels")
+        print(f"   Width range: {min(widths)} - {max(widths)} pixels")
+        print(f"   Height range: {min(heights)} - {max(heights)} pixels")
     
-    # 分析坐标分布
-    print(f"\n📍 坐标分布:")
-    print(f"   x1范围: {df['x1'].min():.0f} - {df['x1'].max():.0f}")
-    print(f"   y1范围: {df['y1'].min():.0f} - {df['y1'].max():.0f}")
-    print(f"   x2范围: {df['x2'].min():.0f} - {df['x2'].max():.0f}")
-    print(f"   y2范围: {df['y2'].min():.0f} - {df['y2'].max():.0f}")
+    # Analyze coordinate distribution
+    print(f"\n Coordinate Distribution:")
+    print(f"   x1 range: {df['x1'].min():.0f} - {df['x1'].max():.0f}")
+    print(f"   y1 range: {df['y1'].min():.0f} - {df['y1'].max():.0f}")
+    print(f"   x2 range: {df['x2'].min():.0f} - {df['x2'].max():.0f}")
+    print(f"   y2 range: {df['y2'].min():.0f} - {df['y2'].max():.0f}")
     
-    # 检查异常值
-    print(f"\n⚠️ 异常值检查:")
-    # 检查长度为0的情况
+    # Check outliers
+    print(f"\n Outlier Check:")
+    # Check zero length cases
     zero_length = df[df['scale_length'] == 0]
     if len(zero_length) > 0:
-        print(f"   长度为0的样本: {len(zero_length)} 个")
-        print(f"   文件: {zero_length['filename'].tolist()}")
+        print(f"   Samples with zero length: {len(zero_length)}")
+        print(f"   Files: {zero_length['filename'].tolist()}")
     
-    # 检查极短比例尺
+    # Check extremely short scale bars
     very_short = df[df['scale_length'] < 10]
     if len(very_short) > 0:
-        print(f"   极短比例尺(<10像素): {len(very_short)} 个")
+        print(f"   Extremely short scale bars (<10 pixels): {len(very_short)} samples")
     
-    # 检查极长比例尺
+    # Check extremely long scale bars
     very_long = df[df['scale_length'] > 500]
     if len(very_long) > 0:
-        print(f"   极长比例尺(>500像素): {len(very_long)} 个")
+        print(f"   Extremely long scale bars (>500 pixels): {len(very_long)} samples")
     
-    # 绘制长度分布直方图
+    # Plot length distribution histogram
     plt.figure(figsize=(12, 8))
     
     plt.subplot(2, 2, 1)
     plt.hist(df['scale_length'], bins=50, alpha=0.7, color='blue')
-    plt.title('比例尺长度分布')
-    plt.xlabel('长度 (像素)')
-    plt.ylabel('频次')
+    plt.title('Scale Bar Length Distribution')
+    plt.xlabel('Length (pixels)')
+    plt.ylabel('Frequency')
     plt.yscale('log')
     
     plt.subplot(2, 2, 2)
     plt.hist(df['scale_length'], bins=50, alpha=0.7, color='red')
-    plt.title('比例尺长度分布 (线性)')
-    plt.xlabel('长度 (像素)')
-    plt.ylabel('频次')
+    plt.title('Scale Bar Length Distribution (Linear)')
+    plt.xlabel('Length (pixels)')
+    plt.ylabel('Frequency')
     
     plt.subplot(2, 2, 3)
     plt.scatter(df['x1'], df['y1'], alpha=0.5, s=1)
-    plt.title('起点坐标分布')
+    plt.title('Start Coordinate Distribution')
     plt.xlabel('x1')
     plt.ylabel('y1')
     
     plt.subplot(2, 2, 4)
     plt.scatter(df['x2'], df['y2'], alpha=0.5, s=1)
-    plt.title('终点坐标分布')
+    plt.title('End Coordinate Distribution')
     plt.xlabel('x2')
     plt.ylabel('y2')
     
@@ -131,39 +131,39 @@ def analyze_scale_data():
     return df
 
 def suggest_improvements(df):
-    """根据数据分析结果提出改进建议"""
-    print(f"\n💡 改进建议:")
+    """Propose improvement suggestions based on data analysis results"""
+    print(f"\n Improvement Suggestions:")
     print("="*50)
     
-    # 计算长度统计
+    # Calculate length statistics
     lengths = df['scale_length'].values
     mean_length = np.mean(lengths)
     std_length = np.std(lengths)
     
-    print(f"1. 数据标准化:")
-    print(f"   - 当前长度范围: {lengths.min():.0f} - {lengths.max():.0f} 像素")
-    print(f"   - 建议使用对数变换: log(length + 1)")
-    print(f"   - 或者使用标准化: (length - mean) / std")
+    print(f"1. Data Standardization:")
+    print(f"   - Current length range: {lengths.min():.0f} - {lengths.max():.0f} pixels")
+    print(f"   - Suggest using log transformation: log(length + 1)")
+    print(f"   - Or use standardization: (length - mean) / std")
     
-    print(f"\n2. 数据过滤:")
-    print(f"   - 移除长度为0的异常样本")
-    print(f"   - 考虑移除极短(<5像素)和极长(>1000像素)的样本")
+    print(f"\n2. Data Filtering:")
+    print(f"   - Remove abnormal samples with zero length")
+    print(f"   - Consider removing extremely short (<5 pixels) and extremely long (>1000 pixels) samples")
     
-    print(f"\n3. 模型改进:")
-    print(f"   - 使用对数损失函数")
-    print(f"   - 添加BatchNorm和Dropout")
-    print(f"   - 使用更小的学习率")
+    print(f"\n3. Model Improvement:")
+    print(f"   - Use logarithmic loss function")
+    print(f"   - Add BatchNorm and Dropout")
+    print(f"   - Use smaller learning rate")
     
-    print(f"\n4. 数据增强:")
-    print(f"   - 减少数据增强，保持比例尺特征")
-    print(f"   - 使用固定尺寸输入")
+    print(f"\n4. Data Augmentation:")
+    print(f"   - Reduce data augmentation to preserve scale bar features")
+    print(f"   - Use fixed-size inputs")
     
-    # 计算对数变换后的统计
+    # Calculate statistics after log transformation
     log_lengths = np.log1p(lengths)
-    print(f"\n5. 对数变换效果:")
-    print(f"   - 原始长度标准差: {std_length:.2f}")
-    print(f"   - 对数长度标准差: {np.std(log_lengths):.2f}")
-    print(f"   - 对数长度范围: {log_lengths.min():.2f} - {log_lengths.max():.2f}")
+    print(f"\n5. Log Transformation Effect:")
+    print(f"   - Original length standard deviation: {std_length:.2f}")
+    print(f"   - Log length standard deviation: {np.std(log_lengths):.2f}")
+    print(f"   - Log length range: {log_lengths.min():.2f} - {log_lengths.max():.2f}")
 
 if __name__ == '__main__':
     df = analyze_scale_data()
