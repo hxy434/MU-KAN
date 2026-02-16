@@ -1,58 +1,58 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-清理CSV文件，删除检测失败的记录
+Clean CSV file and remove records with failed detections
 """
 
 import pandas as pd
 import os
 
 def clean_csv_results():
-    """清理CSV文件，删除检测失败的记录"""
-    print("🧹 清理CSV文件，删除检测失败的记录")
+    """Clean CSV file and remove records with failed detections"""
+    print("🧹 Cleaning CSV file and removing records with failed detections")
     print("="*50)
     
-    # 读取原始CSV文件
+    # Read original CSV file
     input_csv = "epoch80_test_results.csv"
     if not os.path.exists(input_csv):
-        print(f"❌ 文件不存在: {input_csv}")
+        print(f"❌ File does not exist: {input_csv}")
         return
     
-    # 读取数据
+    # Read data
     df = pd.read_csv(input_csv)
-    print(f"📊 原始数据: {len(df)} 条记录")
+    print(f"📊 Original data: {len(df)} records")
     
-    # 统计检测结果
+    # Statistics of detection results
     detected_count = len(df[df['detected'] == True])
     undetected_count = len(df[df['detected'] == False])
     
-    print(f"✅ 成功检测: {detected_count} 条")
-    print(f"❌ 检测失败: {undetected_count} 条")
+    print(f"✅ Successfully detected: {detected_count} records")
+    print(f"❌ Failed detection: {undetected_count} records")
     
-    # 只保留成功检测的记录
+    # Keep only successfully detected records
     cleaned_df = df[df['detected'] == True].copy()
     
-    print(f"🧹 清理后数据: {len(cleaned_df)} 条记录")
+    print(f"🧹 Cleaned data: {len(cleaned_df)} records")
     
-    # 保存清理后的文件
+    # Save cleaned file
     output_csv = "epoch80_test_results_cleaned.csv"
     cleaned_df.to_csv(output_csv, index=False)
-    print(f"✅ 清理后的文件已保存: {output_csv}")
+    print(f"✅ Cleaned file saved to: {output_csv}")
     
-    # 重新计算统计信息
+    # Recalculate statistical information
     if len(cleaned_df) > 0:
         avg_relative_error = cleaned_df['relative_error'].mean()
         avg_absolute_error = cleaned_df['absolute_error'].mean()
         min_error = cleaned_df['relative_error'].min()
         max_error = cleaned_df['relative_error'].max()
         
-        print(f"\n📊 清理后的统计信息:")
-        print(f"平均相对误差: {avg_relative_error:.2f}%")
-        print(f"平均绝对误差: {avg_absolute_error:.1f} 像素")
-        print(f"最小相对误差: {min_error:.2f}%")
-        print(f"最大相对误差: {max_error:.2f}%")
+        print(f"\n📊 Statistical Information after Cleaning:")
+        print(f"Average relative error: {avg_relative_error:.2f}%")
+        print(f"Average absolute error: {avg_absolute_error:.1f} pixels")
+        print(f"Minimum relative error: {min_error:.2f}%")
+        print(f"Maximum relative error: {max_error:.2f}%")
         
-        # 误差分布
+        # Error distribution
         error_ranges = [
             (0, 5, "0-5%"),
             (5, 10, "5-10%"),
@@ -61,16 +61,16 @@ def clean_csv_results():
             (50, float('inf'), ">50%")
         ]
         
-        print(f"\n误差分布:")
+        print(f"\nError Distribution:")
         for min_err, max_err, label in error_ranges:
             if max_err == float('inf'):
                 count = len(cleaned_df[cleaned_df['relative_error'] >= min_err])
             else:
                 count = len(cleaned_df[(cleaned_df['relative_error'] >= min_err) & (cleaned_df['relative_error'] < max_err)])
             percentage = count / len(cleaned_df) * 100
-            print(f"  {label}: {count} 张 ({percentage:.1f}%)")
+            print(f"  {label}: {count} images ({percentage:.1f}%)")
     
-    # 更新统计文件
+    # Update statistics file
     stats_csv = "epoch80_test_stats_cleaned.csv"
     stats_data = {
         'metric': [
@@ -84,10 +84,10 @@ def clean_csv_results():
             'max_relative_error'
         ],
         'value': [
-            len(df),  # 原始总图片数
-            len(cleaned_df),  # 成功检测数
-            undetected_count,  # 未检测数
-            len(cleaned_df)/len(df)*100 if len(df) > 0 else 0,  # 检测率
+            len(df),  # Original total number of images
+            len(cleaned_df),  # Number of successfully detected
+            undetected_count,  # Number of undetected
+            len(cleaned_df)/len(df)*100 if len(df) > 0 else 0,  # Detection rate
             cleaned_df['relative_error'].mean() if len(cleaned_df) > 0 else None,
             cleaned_df['absolute_error'].mean() if len(cleaned_df) > 0 else None,
             cleaned_df['relative_error'].min() if len(cleaned_df) > 0 else None,
@@ -96,32 +96,32 @@ def clean_csv_results():
     }
     stats_df = pd.DataFrame(stats_data)
     stats_df.to_csv(stats_csv, index=False)
-    print(f"✅ 更新后的统计信息已保存: {stats_csv}")
+    print(f"✅ Updated statistical information saved to: {stats_csv}")
     
     return cleaned_df
 
 def show_cleaned_summary():
-    """显示清理后的摘要信息"""
+    """Display summary information after cleaning"""
     print("\n" + "="*50)
-    print("📋 清理摘要")
+    print("📋 Cleaning Summary")
     print("="*50)
     
-    # 检查清理后的文件
+    # Check cleaned file
     cleaned_csv = "epoch80_test_results_cleaned.csv"
     if os.path.exists(cleaned_csv):
         df = pd.read_csv(cleaned_csv)
-        print(f"✅ 清理后的文件包含 {len(df)} 条成功检测的记录")
-        print(f"📁 文件路径: {cleaned_csv}")
+        print(f"✅ Cleaned file contains {len(df)} records with successful detections")
+        print(f"📁 File path: {cleaned_csv}")
         
-        # 显示前几行
-        print(f"\n📄 前5条记录预览:")
+        # Show first few rows
+        print(f"\n📄 Preview of first 5 records:")
         print(df.head().to_string(index=False))
     else:
-        print("❌ 清理后的文件不存在")
+        print("❌ Cleaned file does not exist")
 
 if __name__ == '__main__':
-    # 清理CSV文件
+    # Clean CSV file
     cleaned_df = clean_csv_results()
     
-    # 显示摘要
+    # Show summary
     show_cleaned_summary()
