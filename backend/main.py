@@ -26,11 +26,12 @@ from particle_analysis_demo import analyze_sem_image_ukan_only, analyze_sem_imag
 # Global variable to store particle data
 particle_data_cache = {}
 
-# 工具函数：图片转base64
+# Utility function: Convert image file to base64
 def imgfile2b64(path):
     with open(path, 'rb') as f:
         return 'data:image/png;base64,' + base64.b64encode(f.read()).decode()
-# 工具函数：文本文件转字符串
+
+# Utility function: Convert text file to string
 def txtfile2str(path):
     with open(path, 'r', encoding='utf-8') as f:
         return f.read()
@@ -210,4 +211,4 @@ async def get_particle_details(particle_id: int = Form(...), session_id: str = F
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True) 
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
