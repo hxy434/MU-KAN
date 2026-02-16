@@ -24,20 +24,22 @@ from albumentations import RandomRotate90,Resize
 import time
 
 from PIL import Image
+
 def parse_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--name', default=None, help='model name')
-    parser.add_argument('--output_dir', default='outputs', help='ouput dir')
+    parser.add_argument('--output_dir', default='outputs', help='output directory')
     parser.add_argument('--test', action='store_true', help='run on test set if available (for npz or folder dataset)')
-    parser.add_argument('--test_img_dir', type=str, default=None, help='test images dir (for folder format)')
-    parser.add_argument('--test_mask_dir', type=str, default=None, help='test masks dir (for folder format)')
+    parser.add_argument('--test_img_dir', type=str, default=None, help='test images directory (for folder format)')
+    parser.add_argument('--test_mask_dir', type=str, default=None, help='test masks directory (for folder format)')
 
     args = parser.parse_args()
 
     return args
 
 def seed_torch(seed=1029):
+    """Set random seeds for reproducibility"""
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
     np.random.seed(seed)
@@ -62,7 +64,8 @@ def main():
 
     cudnn.benchmark = True
 
-    model = archs.__dict__[config['arch']] (
+    # Initialize model
+    model = archs.__dict__[config['arch']](
         config['num_classes'],
         config['input_channels'],
         config['deep_supervision'],
@@ -71,13 +74,13 @@ def main():
     )
     model = model.cuda()
 
-    # 自动切换数据集类型
+    # Auto switch dataset type (npz/folder)
     if config.get('data_format', 'folder') == 'npz':
         val_transform = Compose([
             Resize(config['input_h'], config['input_w']),
-            # 不加 transforms.Normalize()
+            # Do not apply transforms.Normalize()
         ])
-        # 判断是否需要测试集
+        # Check if test set is available
         if args.test and os.path.exists(config['val_img_npz'].replace('val', 'test')) and os.path.exists(config['val_mask_npz'].replace('val', 'test')):
             print('==> Running on TEST set')
             test_img_npz = config['val_img_npz'].replace('val', 'test')
@@ -93,10 +96,13 @@ def main():
                 shuffle=False,
                 num_workers=config['num_workers'],
                 drop_last=False)
+            
             def safe_get_img_id(meta):
+                """Safely extract image ID from metadata"""
                 if isinstance(meta, dict):
                     return meta.get('idx', meta.get('img_id', str(meta)))
                 return str(meta)
+            
             get_img_id = safe_get_img_id
             loader = test_loader
             out_dir = os.path.join(args.output_dir, config['name'], 'out_test')
@@ -112,10 +118,13 @@ def main():
                 shuffle=False,
                 num_workers=config['num_workers'],
                 drop_last=False)
+            
             def safe_get_img_id(meta):
+                """Safely extract image ID from metadata"""
                 if isinstance(meta, dict):
                     return meta.get('idx', meta.get('img_id', str(meta)))
                 return str(meta)
+            
             get_img_id = safe_get_img_id
             loader = val_loader
             out_dir = os.path.join(args.output_dir, config['name'], 'out_val')
@@ -123,32 +132,42 @@ def main():
         dataset_name = config['dataset']
         img_ext = '.png'
         mask_ext = '.png'
+        
+        # Set mask extension based on dataset type
         if dataset_name == 'busi' or dataset_name == 'lizi_from_npz':
             mask_ext = '_mask.png'
         elif dataset_name == 'glas':
             mask_ext = '.png'
+        
+        # Use test set if specified and directories are provided
         if args.test and args.test_img_dir and args.test_mask_dir:
             print('==> Running on TEST set (folder format)')
             test_img_dir = args.test_img_dir
             test_mask_dir = args.test_mask_dir
             test_img_ids = []
+            
+            # Validate test images and masks
             for f in os.listdir(test_img_dir):
                 if f.endswith(img_ext) and os.path.splitext(f)[0]:
                     img_id = os.path.splitext(f)[0]
                     img_path = os.path.join(test_img_dir, f)
                     mask_path = os.path.join(test_mask_dir, img_id + mask_ext)
+                    
                     if os.path.isfile(img_path) and os.path.isfile(mask_path):
                         test_img_ids.append(img_id)
                     else:
                         if not os.path.isfile(mask_path):
                             print(f'[WARN] mask not found for: {img_id}, expected: {mask_path}')
+            
             print(f'[INFO] test_img_ids loaded: {test_img_ids}')
             if not test_img_ids:
                 print('[ERROR] No valid test images found! Please check your test_img_dir and test_mask_dir.')
+            
             val_transform = Compose([
                 Resize(config['input_h'], config['input_w']),
                 transforms.Normalize(),
             ])
+            
             test_dataset = Dataset(
                 img_ids=test_img_ids,
                 img_dir=test_img_dir,
@@ -157,27 +176,34 @@ def main():
                 mask_ext=mask_ext,
                 num_classes=config['num_classes'],
                 transform=val_transform)
+            
             test_loader = torch.utils.data.DataLoader(
                 test_dataset,
                 batch_size=config['batch_size'],
                 shuffle=False,
                 num_workers=config['num_workers'],
                 drop_last=False)
+            
             def safe_get_img_id(meta):
+                """Safely extract image ID from metadata"""
                 if isinstance(meta, dict):
                     return meta.get('img_id', meta.get('idx', str(meta)))
                 return str(meta)
+            
             get_img_id = safe_get_img_id
             loader = test_loader
             out_dir = os.path.join(args.output_dir, config['name'], 'out_test')
         else:
+            # Load validation set from standard directory structure
             img_ids = sorted(glob(os.path.join(config['data_dir'], config['dataset'], 'images', '*' + img_ext)))
             img_ids = [os.path.splitext(os.path.basename(p))[0] for p in img_ids]
             _, val_img_ids = train_test_split(img_ids, test_size=0.2, random_state=config['dataseed'])
+            
             val_transform = Compose([
                 Resize(config['input_h'], config['input_w']),
                 transforms.Normalize(),
             ])
+            
             val_dataset = Dataset(
                 img_ids=val_img_ids,
                 img_dir=os.path.join(config['data_dir'], config['dataset'], 'images'),
@@ -186,22 +212,27 @@ def main():
                 mask_ext=mask_ext,
                 num_classes=config['num_classes'],
                 transform=val_transform)
+            
             val_loader = torch.utils.data.DataLoader(
                 val_dataset,
                 batch_size=config['batch_size'],
                 shuffle=False,
                 num_workers=config['num_workers'],
                 drop_last=False)
+            
             def safe_get_img_id(meta):
+                """Safely extract image ID from metadata"""
                 if isinstance(meta, dict):
                     return meta.get('img_id', meta.get('idx', str(meta)))
                 return str(meta)
+            
             get_img_id = safe_get_img_id
             loader = val_loader
             out_dir = os.path.join(args.output_dir, config['name'], 'out_val')
 
-    # ====== 验证数据调试代码 ======
+    # ====== Validation data debugging code ======
 
+    # Load model checkpoint
     ckpt = torch.load(f'{args.output_dir}/{args.name}/model.pth')
 
     try:
@@ -210,13 +241,14 @@ def main():
         print("Pretrained model keys:", ckpt.keys())
         print("Current model keys:", model.state_dict().keys())
         print("Difference in model keys:")
-        print("模型有但权重没有:", set(model.state_dict().keys()) - set(ckpt.keys()))
-        print("权重有但模型没有:", set(ckpt.keys()) - set(model.state_dict().keys()))
+        print("Model has but checkpoint doesn't:", set(model.state_dict().keys()) - set(ckpt.keys()))
+        print("Checkpoint has but model doesn't:", set(ckpt.keys()) - set(model.state_dict().keys()))
         print("Exception:", e)
         model.load_state_dict(ckpt, strict=False)
 
     model.eval()
 
+    # Initialize metric trackers
     iou_avg_meter = AverageMeter()
     dice_avg_meter = AverageMeter()
     hd95_avg_meter = AverageMeter()
@@ -229,18 +261,22 @@ def main():
     specificity_avg_meter = AverageMeter()
     precision_avg_meter = AverageMeter()
 
-    print(f'验证集总batch数: {len(loader)}')
+    print(f'Total batches in validation set: {len(loader)}')
+    
     with torch.no_grad():
         for batch_idx, (input, target, meta) in enumerate(tqdm(loader, total=len(loader), desc="Validating")):
-            if batch_idx == 0:  # 只在第一个batch打印meta信息
-                print(f'当前batch {batch_idx} meta: {meta}')
+            # Print metadata for first batch (debugging)
+            if batch_idx == 0:
+                print(f'Current batch {batch_idx} metadata: {meta}')
+            
             input = input.cuda()
             target = target.cuda()
             model = model.cuda()
-            # compute output
+            
+            # Forward pass
             output = model(input)
 
-            # 使用独立的指标计算函数
+            # Calculate segmentation metrics
             iou = iou_score_s(output, target)
             dice = dice_coef_s(output, target)
             recall = recall_s(output, target)
@@ -253,7 +289,7 @@ def main():
             f1 = f1_score_s(output, target)
             mcc = mcc_s(output, target)
             
-            # 更新所有指标的平均值
+            # Update metric averages
             iou_avg_meter.update(iou, input.size(0))
             dice_avg_meter.update(dice, input.size(0))
             accuracy_avg_meter.update(accuracy, input.size(0))
@@ -265,20 +301,25 @@ def main():
             specificity_avg_meter.update(specificity, input.size(0))
             precision_avg_meter.update(precision, input.size(0))
 
-            # 更新进度条显示
-            if batch_idx % 10 == 0:  # 每10个batch更新一次显示
+            # Update progress bar every 10 batches
+            if batch_idx % 10 == 0:
                 tqdm.write(f'Batch {batch_idx}: IoU={iou:.4f}, Dice={dice:.4f}, Acc={accuracy:.4f}, F1={f1:.4f}')
 
+            # Post-process predictions (sigmoid + thresholding)
             output = torch.sigmoid(output).cpu().numpy()
-            output[output>=0.5]=1
-            output[output<0.5]=0
+            output[output>=0.5] = 1
+            output[output<0.5] = 0
 
+            # Create output directory if not exists
             os.makedirs(out_dir, exist_ok=True)
-            # 修复meta为dict且img_id为list时的保存逻辑
+            
+            # Fix save logic when meta is dict and img_id is list
             if isinstance(meta, dict) and 'img_id' in meta:
                 img_ids = meta['img_id']
             else:
                 img_ids = meta
+                
+            # Save prediction masks
             for pred, img_id in zip(output, img_ids):
                 if isinstance(img_id, (list, tuple)):
                     img_id = str(img_id[0])
@@ -287,6 +328,7 @@ def main():
                 img = Image.fromarray(pred_np, 'L')
                 img.save(os.path.join(out_dir, f'{img_id}.jpg'))
 
+    # Print final evaluation metrics
     print(config['name'])
     print('IoU: %.4f' % iou_avg_meter.avg)
     print('Dice: %.4f' % dice_avg_meter.avg)
