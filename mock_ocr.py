@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-ocr_process
 """
-百度OCR模块
-使用百度OCR API进行文字识别
+Baidu OCR Module
+Perform text recognition using Baidu OCR API
 """
 
 import cv2
@@ -15,13 +15,13 @@ import base64
 import json
 import urllib.parse
 
-# 百度OCR access_token
+# Baidu OCR access_token
 ACCESS_TOKEN = "24.a6279612cc9567f9aca9316df9294369.2592000.1767946592.282335-119495206"
 
-print("✅ 使用百度OCR API识别")
+print(" Using Baidu OCR API for recognition")
 
 def get_access_token(api_key, secret_key):
-    """获取百度OCR access_token"""
+    """Get Baidu OCR access_token"""
     url = "https://aip.baidubce.com/oauth/2.0/token"
     params = {
         "grant_type": "client_credentials",
@@ -35,14 +35,14 @@ def get_access_token(api_key, secret_key):
         if "access_token" in result:
             return result["access_token"]
         else:
-            print(f"获取access_token失败: {result}")
+            print(f"Failed to get access_token: {result}")
             return None
     except Exception as e:
-        print(f"获取access_token异常: {e}")
+        print(f"Exception occurred while getting access_token: {e}")
         return None
 
 def load_scale_data_from_csv(csv_path='scale_bar_labels.csv'):
-    """从CSV文件加载真实的比例尺数据"""
+    """Load real scale bar data from CSV file"""
     try:
         if os.path.exists(csv_path):
             df = pd.read_csv(csv_path)
@@ -53,37 +53,37 @@ def load_scale_data_from_csv(csv_path='scale_bar_labels.csv'):
                 scale_data[filename] = length
             return scale_data
         else:
-            print(f"CSV文件不存在: {csv_path}")
+            print(f"CSV file does not exist: {csv_path}")
             return {}
     except Exception as e:
-        print(f"读取CSV文件失败: {e}")
+        print(f"Failed to read CSV file: {e}")
         return {}
 
 def process(image_path, access_token=None):
     """
-    使用百度OCR API进行文字识别
+    Perform text recognition using Baidu OCR API
     """
-    # 检查图像文件是否存在
+    # Check if image file exists
     if not os.path.exists(image_path):
         return {"error_code": 1, "error_msg": "Image file not found"}
     
-    # 读取图像
+    # Read image
     image = cv2.imread(image_path)
     if image is None:
         return {"error_code": 2, "error_msg": "Cannot read image"}
     
-    # 如果没有提供access_token，使用全局ACCESS_TOKEN
+    # Use global ACCESS_TOKEN if no access_token is provided
     if access_token is None:
         global ACCESS_TOKEN
         access_token = ACCESS_TOKEN
     
-    print(f"🔍 使用百度OCR识别: {image_path}")
+    print(f" Recognizing with Baidu OCR: {image_path}")
     
-    # 将图像编码为base64
+    # Encode image to base64
     _, img_encoded = cv2.imencode('.jpg', image)
     img_base64 = base64.b64encode(img_encoded).decode('utf-8')
     
-    # 调用百度OCR API
+    # Call Baidu OCR API
     url = f"https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic?access_token={access_token}"
     
     headers = {
@@ -93,9 +93,9 @@ def process(image_path, access_token=None):
     
     data = {
         'image': img_base64,
-        'language_type': 'CHN_ENG',  # 中英文混合
-        'detect_direction': 'true',   # 检测图像朝向
-        'detect_language': 'true'     # 检测语言
+        'language_type': 'CHN_ENG',  # Mixed Chinese and English
+        'detect_direction': 'true',   # Detect image orientation
+        'detect_language': 'true'     # Detect language
     }
     
     try:
@@ -103,11 +103,11 @@ def process(image_path, access_token=None):
         result = response.json()
         
         if "error_code" in result:
-            print(f"百度OCR API错误: {result}")
-            # 如果API调用失败，返回基于CSV的备选结果
+            print(f"Baidu OCR API Error: {result}")
+            # If API call fails, return fallback result based on CSV
             return get_fallback_result_from_csv(image_path)
         
-        # 转换百度OCR结果格式为统一格式
+        # Convert Baidu OCR result format to unified format
         words_result = []
         for item in result.get("words_result", []):
             words_result.append({
@@ -120,7 +120,7 @@ def process(image_path, access_token=None):
                 }
             })
         
-        print(f"📝 百度OCR识别结果: {len(words_result)} 个文本区域")
+        print(f" Baidu OCR recognition results: {len(words_result)} text regions")
         return {
             "error_code": 0,
             "words_result_num": len(words_result),
@@ -128,18 +128,18 @@ def process(image_path, access_token=None):
         }
         
     except Exception as e:
-        print(f"百度OCR API调用异常: {e}")
-        # 返回基于CSV的备选结果
+        print(f"Exception occurred during Baidu OCR API call: {e}")
+        # Return fallback result based on CSV
         return get_fallback_result_from_csv(image_path)
 
 def get_fallback_result_from_csv(image_path):
-    """当OCR API失败时，从CSV文件获取真实的备选结果"""
+    """When OCR API fails, get real fallback results from CSV file"""
     filename = os.path.basename(image_path)
     scale_data = load_scale_data_from_csv()
     
     if filename in scale_data:
         length_value = scale_data[filename]
-        print(f"使用CSV中的真实数据: {filename} -> {length_value}")
+        print(f"Using real data from CSV: {filename} -> {length_value}")
         return {
             "error_code": 0,
             "words_result_num": 1,
@@ -148,8 +148,8 @@ def get_fallback_result_from_csv(image_path):
             ]
         }
     else:
-        print(f"CSV中未找到 {filename} 的数据，使用默认值")
-        # 如果CSV中也没有，使用默认值
+        print(f"No data found for {filename} in CSV, using default value")
+        # If no data in CSV either, use default value
         return {
             "error_code": 0,
             "words_result_num": 1,
@@ -160,54 +160,54 @@ def get_fallback_result_from_csv(image_path):
 
 def extract_scale_length_from_ocr(image_path, access_token=None):
     result = process(image_path, access_token)
-    print("OCR原始结果：", result)  # 调试输出
+    print("Raw OCR result:", result)  # Debug output
     
     if result.get("error_code", 0) != 0:
-        print(f"OCR错误: {result.get('error_msg', 'Unknown error')}")
+        print(f"OCR Error: {result.get('error_msg', 'Unknown error')}")
         return None, None
     
     words_result = result.get("words_result", [])
     for item in words_result:
-        # 统一格式，去空格、μ->u、转小写
+        # Unify format: remove spaces, replace μ with u, convert to lowercase
         words = item["words"].replace(' ', '').replace('μ', 'u').lower()
-        print(f"处理文本: '{words}'")
-        # 用正则提取数字和单位
+        print(f"Processing text: '{words}'")
+        # Extract numbers and units with regex
         match = re.match(r"([0-9.]+)(nm|um)", words)
         if match:
             value = float(match.group(1))
             unit = match.group(2)
-            print(f"找到比例尺: {value} {unit} (原始识别)")
-            # 单位归一化：全部转为μm
+            print(f"Found scale bar: {value} {unit} (original recognition)")
+            # Unit normalization: convert all to μm
             if unit == "um":
                 unit = "μm"
             elif unit == "nm":
-                value = value / 1000  # nm转μm
+                value = value / 1000  # Convert nm to μm
                 unit = "μm"
-            print(f"转换后结果: {value} {unit}")
+            print(f"Converted result: {value} {unit}")
             return value, unit
-    print("未找到比例尺信息")
+    print("No scale bar information found")
     return None, None
 
 if __name__ == "__main__":
-    # 测试真实OCR
+    # Test real OCR
     test_image_path = "test_scale_with_text.jpg"
     if os.path.exists(test_image_path):
         result = process(test_image_path)
-        print("OCR结果:", result)
+        print("OCR Result:", result)
         
         scale_length, unit = extract_scale_length_from_ocr(test_image_path)
-        print(f"提取的比例尺: {scale_length} {unit}")
+        print(f"Extracted scale bar: {scale_length} {unit}")
     else:
-        print("测试图像不存在，创建测试图像...")
+        print("Test image does not exist, creating test image...")
         
-        # 创建测试图像
+        # Create test image
         image = np.random.randint(0, 255, (400, 400, 3), dtype=np.uint8)
         cv2.line(image, (50, 50), (350, 50), (255, 255, 255), 8)
         cv2.putText(image, "200 nm", (150, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
         cv2.imwrite(test_image_path, image)
         
         result = process(test_image_path)
-        print("OCR结果:", result)
+        print("OCR Result:", result)
         
         scale_length, unit = extract_scale_length_from_ocr(test_image_path)
-        print(f"提取的比例尺: {scale_length} {unit}") 
+        print(f"Extracted scale bar: {scale_length} {unit}")
