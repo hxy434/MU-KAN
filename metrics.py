@@ -40,7 +40,7 @@ def dice_coef(output, target):
         (output.sum() + target.sum() + smooth)
 
 def iou_score_s(output, target):
-    """独立的IoU计算函数"""
+    """Independent IoU calculation function"""
     smooth = 1e-5
 
     if torch.is_tensor(output):
@@ -56,7 +56,7 @@ def iou_score_s(output, target):
     return iou
 
 def dice_coef_s(output, target):
-    """独立的Dice系数计算函数"""
+    """Independent Dice coefficient calculation function"""
     smooth = 1e-5
 
     if torch.is_tensor(output):
@@ -73,65 +73,65 @@ def dice_coef_s(output, target):
     return dice
 
 def recall_s(output, target):
-    """独立的召回率计算函数"""
+    """Independent Recall calculation function"""
     smooth = 1e-5
 
-    # 将输出用sigmoid函数压缩到0到1之间
+    # Compress output to range [0, 1] using sigmoid function
     output = torch.sigmoid(output)
 
-    # 将输出和目标展平为一维数组，添加detach()分离梯度
+    # Flatten output and target to 1D arrays, add detach() to separate gradients
     output = output.view(-1).detach().cpu().numpy()
     target = target.view(-1).detach().cpu().numpy()
 
-    # 计算真正例数目
+    # Calculate number of true positives
     true_positives = np.sum(np.round(np.clip(output * target, 0, 1)))
 
-    # 计算真实的正例数目
+    # Calculate number of actual positives
     actual_positives = np.sum(np.round(np.clip(target, 0, 1)))
 
-    # 计算召回率
+    # Calculate recall
     recall = true_positives / (actual_positives + smooth)
 
     return recall
 
 def precision_s(output, target):
-    """独立的精确率计算函数"""
+    """Independent Precision calculation function"""
     smooth = 1e-5
 
-    # 将输出用sigmoid函数压缩到0到1之间
+    # Compress output to range [0, 1] using sigmoid function
     output = torch.sigmoid(output)
 
-    # 将输出和目标展平为一维数组，添加detach()分离梯度
+    # Flatten output and target to 1D arrays, add detach() to separate gradients
     output = output.view(-1).detach().cpu().numpy()
     target = target.view(-1).detach().cpu().numpy()
 
-    # 计算真正例数目
+    # Calculate number of true positives
     true_positives = np.sum(np.round(np.clip(output * target, 0, 1)))
 
-    # 计算预测的正例数目
+    # Calculate number of predicted positives
     predicted_positives = np.sum(np.round(np.clip(output, 0, 1)))
 
-    # 计算精确度
+    # Calculate precision
     precision = true_positives / (predicted_positives + smooth)
 
     return precision
 
 def accuracy_s(output, target):
-    """独立的准确率计算函数"""
-    # 将输出用sigmoid函数压缩到0到1之间，并四舍五入为0或1
+    """Independent Accuracy calculation function"""
+    # Compress output to range [0, 1] using sigmoid function and round to 0 or 1
     predicted = torch.round(torch.sigmoid(output))
 
-    # 将预测值和目标值转换为CPU上的numpy数组，添加detach()分离梯度
+    # Convert predictions and targets to numpy arrays on CPU, add detach() to separate gradients
     predicted = predicted.view(-1).detach().cpu().numpy()
     target = target.view(-1).detach().cpu().numpy()
 
-    # 计算准确度
+    # Calculate accuracy
     accuracy = np.mean(predicted == target)
 
     return accuracy
 
 def jaccard_coef(output, target):
-    """独立的Jaccard系数计算函数"""
+    """Independent Jaccard coefficient calculation function"""
     smooth = 1e-5
 
     output = torch.sigmoid(output).view(-1).detach().cpu().numpy()
@@ -142,98 +142,98 @@ def jaccard_coef(output, target):
     return (intersection + smooth) / (union + smooth)
 
 def specificity_s(output, target):
-    """独立的特异度计算函数"""
+    """Independent Specificity calculation function"""
     smooth = 1e-5
 
-    # 将输出用sigmoid函数压缩到0到1之间，并四舍五入为0或1
+    # Compress output to range [0, 1] using sigmoid function and round to 0 or 1
     predicted = torch.round(torch.sigmoid(output))
 
-    # 将预测值和目标值转换为CPU上的numpy数组，添加detach()分离梯度
+    # Convert predictions and targets to numpy arrays on CPU, add detach() to separate gradients
     predicted = predicted.view(-1).detach().cpu().numpy()
     target = target.view(-1).detach().cpu().numpy()
 
-    # 计算真负例数目
+    # Calculate number of true negatives
     true_negatives = np.sum(np.round(np.clip((1 - predicted) * (1 - target), 0, 1)))
 
-    # 计算真实的负例数目
+    # Calculate number of actual negatives
     actual_negatives = np.sum(np.round(np.clip(1 - target, 0, 1)))
 
-    # 计算特异性
+    # Calculate specificity
     specificity = true_negatives / (actual_negatives + smooth)
 
     return specificity
 
 def auc_s(output, target):
-    """独立的AUC计算函数"""
-    # 强制二值化目标标签（假设原始标签为0/255或连续值）
+    """Independent AUC calculation function"""
+    # Force binarization of target labels (assuming original labels are 0/255 or continuous values)
     target = (target > 0).float()
 
-    # 转换为概率并展平，添加detach()分离梯度
+    # Convert to probabilities and flatten, add detach() to separate gradients
     output_prob = torch.sigmoid(output).squeeze(1).view(-1).detach().cpu().numpy()
     target = target.squeeze(1).view(-1).detach().cpu().numpy()
 
-    # 处理多标签情况（若为单标签，直接计算）
+    # Handle multi-label case (calculate directly for single-label)
     if len(target.shape) > 1 and target.shape[1] > 1:
-        # 多标签：设置 average='micro' 或 'macro'
+        # Multi-label: set average='micro' or 'macro'
         auc = roc_auc_score(target, output_prob, average='micro')
     else:
-        # 单标签二分类
+        # Single-label binary classification
         auc = roc_auc_score(target, output_prob)
 
     return auc
 
 def f1_score_s(output, target):
-    """独立的F1分数计算函数"""
+    """Independent F1 score calculation function"""
     smooth = 1e-5
 
-    # 计算精确度
+    # Calculate precision
     precision = precision_s(output, target)
 
-    # 计算召回率
+    # Calculate recall
     recall = recall_s(output, target)
 
-    # 计算 F1 score
+    # Calculate F1 score
     f1 = (2 * precision * recall) / (precision + recall + smooth)
 
     return f1
 
 def mcc_s(output, target):
-    """独立的MCC计算函数"""
-    # 确保目标标签为二值标签（假设目标标签是 0 到 255 范围的值）
-    target = (target > 0).float()  # 将目标标签转换为 0 和 1 的二值标签
+    """Independent MCC calculation function"""
+    # Ensure target labels are binary (assuming target labels are in range 0 to 255)
+    target = (target > 0).float()  # Convert target labels to binary 0 and 1 labels
 
-    # 将模型输出转换为概率值
+    # Convert model output to probability values
     output_prob = torch.sigmoid(output)
 
-    # 将概率值转换为二值标签
-    predicted = (output_prob > 0.5).float()  # 使用 0.5 作为阈值
+    # Convert probability values to binary labels
+    predicted = (output_prob > 0.5).float()  # Use 0.5 as threshold
 
-    # 将张量转换为 numpy 数组，添加detach()分离梯度
+    # Convert tensors to numpy arrays, add detach() to separate gradients
     target_array = target.squeeze(1).view(-1).detach().cpu().numpy()
     predicted = predicted.squeeze(1).view(-1).detach().cpu().numpy()
 
-    # 计算马修斯相关系数
+    # Calculate Matthews Correlation Coefficient
     mcc = matthews_corrcoef(target_array, predicted)
     return mcc
 
 def sensitivity_s(output, target):
-    """独立的敏感度计算函数 (与召回率相同)"""
+    """Independent Sensitivity calculation function (same as recall)"""
     smooth = 1e-5
 
-    # 将输出用sigmoid函数压缩到0到1之间，并四舍五入为0或1
+    # Compress output to range [0, 1] using sigmoid function and round to 0 or 1
     predicted = torch.round(torch.sigmoid(output))
 
-    # 将预测值和目标值转换为CPU上的numpy数组，添加detach()分离梯度
+    # Convert predictions and targets to numpy arrays on CPU, add detach() to separate gradients
     predicted = predicted.view(-1).detach().cpu().numpy()
     target = target.view(-1).detach().cpu().numpy()
 
-    # 计算真正例数目
+    # Calculate number of true positives
     true_positives = np.sum(np.round(np.clip(predicted * target, 0, 1)))
 
-    # 计算真实的正例数目
+    # Calculate number of actual positives
     actual_positives = np.sum(np.round(np.clip(target, 0, 1)))
 
-    # 计算敏感性
+    # Calculate sensitivity
     sensitivity = true_positives / (actual_positives + smooth)
 
     return sensitivity
@@ -246,14 +246,14 @@ def indicators(output, target):
     output_ = output > 0.5
     target_ = target > 0.5
 
-    # 基础指标
+    # Basic metrics
     iou_ = jc(output_, target_)
     dice_ = dc(output_, target_)
     recall_ = recall(output_, target_)
     specificity_ = specificity(output_, target_)
     precision_ = precision(output_, target_)
     
-    # 新增指标
+    # Additional metrics
     # Accuracy
     accuracy_ = accuracy_score(target_.flatten(), output_.flatten())
     
@@ -269,13 +269,13 @@ def indicators(output, target):
     # Matthews Correlation Coefficient (MCC)
     mcc_ = matthews_corrcoef(target_.flatten(), output_.flatten())
     
-    # Jaccard (IoU 的另一个名称)
-    jaccard_ = iou_  # IoU 和 Jaccard 是同一个指标
+    # Jaccard (alternative name for IoU)
+    jaccard_ = iou_  # IoU and Jaccard are the same metric
     
-    # Sensitivity (与 recall 相同)
+    # Sensitivity (same as recall)
     sensitivity_ = recall_
     
-    # Hausdorff Distance (如果可用)
+    # Hausdorff Distance (if available)
     try:
         hd_ = hd(output_, target_)
         hd95_ = hd95(output_, target_)
