@@ -60,7 +60,7 @@ class Dataset(torch.utils.data.Dataset):
 
         mask = []
         for i in range(self.num_classes):
-            # 只针对 lizi_from_npz，不加类别子目录
+           
             if self.mask_dir and 'lizi_from_npz' in self.mask_dir:
                 mask_path = os.path.join(self.mask_dir, img_id + self.mask_ext)
             else:
@@ -88,11 +88,9 @@ class Dataset(torch.utils.data.Dataset):
         return img, mask, {'img_id': img_id}
 
 class NPZDataset(torch.utils.data.Dataset):
-    """
-    用于加载 npz 或 npy 格式的医学分割数据集。
-    """
+   
     def __init__(self, img_npz, mask_npz, transform=None, img_key=None, mask_key=None):
-        # 自动兼容 npy 和 npz
+      
         img_npz_obj = np.load(img_npz)
         mask_npz_obj = np.load(mask_npz)
         if isinstance(img_npz_obj, np.ndarray):
