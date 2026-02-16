@@ -116,7 +116,7 @@ class EfficientNetScaleDetector(nn.Module):
     def __init__(self, model_name='efficientnet_b0', pretrained=True):
         super(EfficientNetScaleDetector, self).__init__()
         
-        # 使用torchvision的EfficientNet
+       
         if model_name == 'efficientnet_b0':
             self.backbone = models.efficientnet_b0(weights=models.EfficientNet_B0_Weights.IMAGENET1K_V1 if pretrained else None)
             feature_dim = 1280
@@ -178,7 +178,7 @@ class VisionTransformerScaleDetector(nn.Module):
     def __init__(self, model_name='vit_base_patch16_224', pretrained=True):
         super(VisionTransformerScaleDetector, self).__init__()
         
-        # 使用torchvision的Vision Transformer
+       
         if model_name == 'vit_base_patch16_224':
             self.backbone = models.vit_b_16(weights=models.ViT_B_16_Weights.IMAGENET1K_V1 if pretrained else None)
             feature_dim = 768
