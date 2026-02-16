@@ -358,21 +358,21 @@ class EnhancedConvLayer(nn.Module):
         super().__init__()
         
         self.conv = nn.Sequential(
-            # 第一个卷积层
+           
             nn.Conv2d(in_ch, out_ch, 3, padding=1, bias=False),
             nn.BatchNorm2d(out_ch),
             nn.GELU(),
             
-            # 第二个卷积层
+           
             nn.Conv2d(out_ch, out_ch, 3, padding=1, bias=False),
             nn.BatchNorm2d(out_ch),
             
-            # 通道注意力机制
+          
             # SEModule(out_ch, reduction),
             nn.GELU()
         )
 
-        # 残差连接
+        
         self.shortcut = nn.Sequential()
         if in_ch != out_ch:
             self.shortcut = nn.Sequential(
@@ -380,10 +380,10 @@ class EnhancedConvLayer(nn.Module):
                 nn.BatchNorm2d(out_ch),
             )
             
-        # 正则化
+      
         # self.drop = DropBlock2d(block_size=3, p=0.1)
         
-        # 参数初始化
+       
         self._init_weights()
 
     def _init_weights(self):
@@ -430,13 +430,13 @@ class DropBlock2d(nn.Module):
         if not self.training or self.p == 0:
             return x
             
-        # 计算gamma参数
+        
         gamma = (self.p * x.shape[-1]**2) / (self.block_size**2 * (x.shape[-1] - self.block_size + 1)**2)
         
-        # 生成掩码
+       
         mask = torch.bernoulli(torch.ones_like(x) * gamma)
         
-        # 创建block mask
+        
         block_mask = F.max_pool2d(
             mask, 
             kernel_size=self.block_size, 
@@ -444,7 +444,7 @@ class DropBlock2d(nn.Module):
             padding=self.block_size//2
         )
         
-        # 归一化并应用
+        
         x = x * (1 - block_mask) / (1 - gamma)
         return x
 
