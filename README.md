@@ -1,51 +1,49 @@
-# 粒子分析项目
+# Particle Analysis Project
 
-这个项目集成了UKAN语义分割模型和YOLO目标检测模型，用于粒子图像的分析，包括比例尺检测、OCR识别和粒子特征提取。
+This project integrates the UKAN semantic segmentation model and YOLO object detection model for particle image analysis, including scale bar detection, OCR recognition, and particle feature extraction.
 
-## 文件说明
+## File Description
 
-- `particle_analysis_demo.py` - 主要的粒子分析脚本，集成了所有功能
-- `ukan_inference.py` - UKAN模型推理脚本
-- `view_results.py` - 结果可视化脚本
-- `scale_detector.py` - 比例尺检测器
-- `particle_analyzer.py` - 粒子分析器
-- `mock_ocr.py` - OCR模拟器
-- `scale_detector_kan.pth` - 比例尺检测模型权重
-- `粒子分析使用说明.md` - 详细使用说明
+- `particle_analysis_demo.py` - Main particle analysis script that integrates all functionalities
+- `ukan_inference.py` - UKAN model inference script
+- `view_results.py` - Result visualization script
+- `scale_detector.py` - Scale bar detector
+- `particle_analyzer.py` - Particle analyzer
+- `mock_ocr.py` - OCR simulator
+- `scale_detector_kan.pth` - Pre-trained weights for scale bar detection model
+- `Particle Analysis Usage Instructions.md` - Detailed usage guidelines
 
-## 使用方法
+## Usage
 
-### 1. 运行粒子分析
+### 1. Run Particle Analysis
 ```bash
 python particle_analysis_demo.py --image path/to/your/image.jpg --method ukan
-```
 
-### 2. 查看UKAN推理结果
+### 2. View UKAN Inference Results
 ```bash
 python view_results.py --image path/to/your/image.jpg
 ```
 
-### 3. 仅运行UKAN推理
+### 3. Run Only UKAN Inference
 ```bash
 python ukan_inference.py --image path/to/your/image.jpg
 ```
 
-## 检测方法选择
+Detection Method Selection
+--method ukan: Use UKAN semantic segmentation model
+--method yolo: Use YOLO object detection model
+--method auto: Auto-selection (UKAN is used by default)
 
-- `--method ukan`: 使用UKAN语义分割模型
-- `--method yolo`: 使用YOLO目标检测模型
-- `--method auto`: 自动选择（默认使用UKAN）
+## Key Features
 
-## 功能特性
+1.Multi-model Support: UKAN semantic segmentation + YOLO object detection
+2.Scale Bar Detection: Automatically detect scale bars in images
+3.OCR Recognition: Identify numerical values on scale bars
+4.Particle Analysis: Extract particle features (area, diameter, circularity, etc.)
+5.Result Visualization: Generate analytical result charts
+6.Physical Measurement: Convert pixel measurements to actual physical dimensions
 
-1. **多模型支持**: UKAN语义分割 + YOLO目标检测
-2. **比例尺检测**: 自动检测图像中的比例尺
-3. **OCR识别**: 识别比例尺上的数值
-4. **粒子分析**: 提取粒子的面积、直径、圆度等特征
-5. **结果可视化**: 生成分析结果图表
-6. **物理测量**: 将像素测量转换为实际物理尺寸
-
-## 依赖要求
+## Dependencies
 
 - PyTorch
 - OpenCV
@@ -55,9 +53,9 @@ python ukan_inference.py --image path/to/your/image.jpg
 - Ultralytics (YOLO)
 - EasyOCR (可选，用于真实OCR)
 
-## 注意事项
+## Notes
 
-1. 确保UKAN模型权重文件在正确位置
-2. 比例尺检测模型已预训练，可直接使用
-3. 支持多种图像格式：jpg, png, bmp等
-4. 分析结果会保存为CSV文件和可视化图表 
+1.Ensure UKAN model weight files are placed in the correct directory
+2.The scale bar detection model is pre-trained and ready for direct use
+3.Supports multiple image formats: jpg, png, bmp, etc.
+4.Analysis results are saved as CSV files and visual charts
