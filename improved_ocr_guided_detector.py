@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-改进的OCR引导比例尺检测器
-基于mock_ocr.py的调用方式
+Improved OCR-Guided Scale Bar Detector
+Based on the calling method of mock_ocr.py
 """
 
 import os
@@ -22,30 +22,30 @@ class ImprovedOCRGuidedDetector:
         self.scale_units = ['nm', 'μm', 'um', 'mm', 'cm', 'm']
         self.expansion_ratio = 3.0
         self.min_confidence = 0.1
-        print("✅ 改进的OCR引导检测器初始化完成")
+        print(" Improved OCR-guided detector initialized successfully")
     
     def process_ocr_mock_style(self, image_path):
-        """模仿mock_ocr.py的调用方式"""
+        """Imitate the calling method of mock_ocr.py"""
         if not self.access_token:
-            print("❌ 未提供access_token")
+            print("No access_token provided")
             return None
         
-        print(f"🔍 使用百度OCR识别: {image_path}")
+        print(f" Recognizing with Baidu OCR: {image_path}")
         
-        # 检查图像文件是否存在
+        # Check if image file exists
         if not os.path.exists(image_path):
             return {"error_code": 1, "error_msg": "Image file not found"}
         
-        # 读取图像
+        # Read image
         image = cv2.imread(image_path)
         if image is None:
             return {"error_code": 2, "error_msg": "Cannot read image"}
         
-        # 将图像编码为base64
+        # Encode image to base64
         _, img_encoded = cv2.imencode('.jpg', image)
         img_base64 = base64.b64encode(img_encoded).decode('utf-8')
         
-        # 调用百度OCR API - 使用general接口获取位置信息
+        # Call Baidu OCR API - use general interface to get location information
         url = f"https://aip.baidubce.com/rest/2.0/ocr/v1/general?access_token={self.access_token}"
         
         headers = {
@@ -67,11 +67,11 @@ class ImprovedOCRGuidedDetector:
             result = response.json()
             
             if "error_code" in result:
-                print(f"百度OCR API错误: {result}")
-                # 如果API调用失败，返回基于CSV的备选结果
+                print(f"Baidu OCR API Error: {result}")
+                # If API call fails, return fallback result based on CSV
                 return self.get_fallback_result_from_csv(image_path)
             
-            # 转换百度OCR结果格式为统一格式
+            # Convert Baidu OCR result format to unified format
             words_result = []
             for item in result.get("words_result", []):
                 words_result.append({
@@ -84,7 +84,7 @@ class ImprovedOCRGuidedDetector:
                     }
                 })
             
-            print(f"📝 百度OCR识别结果: {len(words_result)} 个文本区域")
+            print(f" Baidu OCR recognition results: {len(words_result)} text regions")
             return {
                 "error_code": 0,
                 "words_result_num": len(words_result),
@@ -92,17 +92,17 @@ class ImprovedOCRGuidedDetector:
             }
             
         except Exception as e:
-            print(f"百度OCR API调用异常: {e}")
-            # 返回基于CSV的备选结果
+            print(f"Exception occurred during Baidu OCR API call: {e}")
+            # Return fallback result based on CSV
             return self.get_fallback_result_from_csv(image_path)
     
     def get_fallback_result_from_csv(self, image_path):
-        """当OCR API失败时，从CSV文件获取真实的备选结果"""
+        """When OCR API fails, get real fallback results from CSV file"""
         filename = os.path.basename(image_path)
         csv_file = "scale_bar_labels_fixed.csv"
         
         if not os.path.exists(csv_file):
-            print(f"❌ CSV文件不存在: {csv_file}")
+            print(f" CSV file does not exist: {csv_file}")
             return {
                 "error_code": 0,
                 "words_result_num": 1,
@@ -115,7 +115,7 @@ class ImprovedOCRGuidedDetector:
         row = df[df['filename'] == filename]
         
         if len(row) == 0:
-            print(f"CSV中未找到 {filename} 的数据，使用默认值")
+            print(f"No data found for {filename} in CSV, using default values")
             return {
                 "error_code": 0,
                 "words_result_num": 1,
@@ -125,9 +125,9 @@ class ImprovedOCRGuidedDetector:
             }
         
         length_value = row.iloc[0]['length']
-        print(f"使用CSV中的真实数据: {filename} -> {length_value}")
+        print(f"Using real data from CSV: {filename} -> {length_value}")
         
-        # 读取图片获取尺寸来估算文本位置
+        # Read image to get dimensions for estimating text position
         image = cv2.imread(image_path)
         if image is not None:
             height, width = image.shape[:2]
@@ -159,16 +159,16 @@ class ImprovedOCRGuidedDetector:
             }
     
     def find_scale_text_regions(self, image_path):
-        """查找比例尺文本区域 - 限制只返回一个最佳区域"""
-        print(f"🔍 OCR检测文本: {os.path.basename(image_path)}")
+        """Find scale bar text regions - limit to return only one best region"""
+        print(f" Detecting text with OCR: {os.path.basename(image_path)}")
         
-        # 获取OCR结果
+        # Get OCR results
         ocr_result = self.process_ocr_mock_style(image_path)
         if not ocr_result or 'words_result' not in ocr_result:
-            print("   ❌ OCR识别失败")
+            print("    OCR recognition failed")
             return []
         
-        # 提取包含比例尺单位的文本
+        # Extract text containing scale bar units
         scale_texts = []
         for item in ocr_result['words_result']:
             text = item.get('words', '').strip()
@@ -179,30 +179,30 @@ class ImprovedOCRGuidedDetector:
                     'confidence': item.get('confidence', 0)
                 })
         
-        print(f"   OCR识别到 {len(ocr_result['words_result'])} 个文本区域")
-        print(f"   ✅ 检测到比例尺文本: {[t['text'] for t in scale_texts]}")
-        print(f"   共检测到 {len(scale_texts)} 个比例尺文本")
+        print(f"   OCR detected {len(ocr_result['words_result'])} text regions")
+        print(f"   Detected scale bar text: {[t['text'] for t in scale_texts]}")
+        print(f"   Total scale bar texts detected: {len(scale_texts)}")
         
         if not scale_texts:
             return []
         
-        # 如果只有一个比例尺文本，直接返回
+        # If only one scale bar text, return directly
         if len(scale_texts) == 1:
             return [scale_texts[0]]
         
-        # 如果有多个比例尺文本，需要选择最佳的一个
-        print(f"   ⚠️ 检测到多个比例尺文本，需要选择最佳区域")
+        # If multiple scale bar texts, need to select the best one
+        print(f"    Multiple scale bar texts detected, need to select the best region")
         
-        # 先进行全图检测，看看哪些区域附近有比例尺
+        # First perform full image detection to see which regions have scale bars nearby
         full_image_results = self.detect_scale_full_image(image_path, conf=0.2)
         
         if not full_image_results:
-            # 如果没有全图检测结果，选择置信度最高的
+            # If no full image detection results, select the one with highest confidence
             best_text = max(scale_texts, key=lambda x: x.get('confidence', 0))
-            print(f"   📍 无全图检测结果，选择置信度最高的: {best_text['text']}")
+            print(f"    No full image detection results, selecting highest confidence: {best_text['text']}")
             return [best_text]
         
-        # 计算每个文本区域与检测到的比例尺的距离
+        # Calculate distance between each text region and detected scale bars
         best_text = None
         min_distance = float('inf')
         
@@ -211,9 +211,9 @@ class ImprovedOCRGuidedDetector:
             text_center_x = text_location.get('left', 0) + text_location.get('width', 0) / 2
             text_center_y = text_location.get('top', 0) + text_location.get('height', 0) / 2
             
-            # 计算与最近比例尺的距离
+            # Calculate distance to nearest scale bar
             for detection in full_image_results:
-                # 使用检测框的中心点
+                # Use center point of detection box
                 bbox = detection['bbox']
                 det_center_x = (bbox[0] + bbox[2]) / 2
                 det_center_y = (bbox[1] + bbox[3]) / 2
@@ -225,16 +225,16 @@ class ImprovedOCRGuidedDetector:
                     best_text = text_info
         
         if best_text:
-            print(f"   📍 选择距离比例尺最近的文本: {best_text['text']} (距离: {min_distance:.1f}像素)")
+            print(f"    Selected text closest to scale bar: {best_text['text']} (Distance: {min_distance:.1f} pixels)")
         else:
-            # 如果计算失败，选择第一个
+            # If calculation fails, select the first one
             best_text = scale_texts[0]
-            print(f"   📍 选择第一个文本: {best_text['text']}")
+            print(f"    Selected first text: {best_text['text']}")
         
         return [best_text]
     
     def create_search_regions(self, image_path, text_regions):
-        """创建搜索区域"""
+        """Create search regions"""
         image = cv2.imread(image_path)
         if image is None:
             return []
@@ -251,7 +251,7 @@ class ImprovedOCRGuidedDetector:
             x2 = x1 + location['width']
             y2 = y1 + location['height']
             
-            # 扩展搜索区域
+            # Expand search region
             center_x = (x1 + x2) // 2
             center_y = (y1 + y2) // 2
             
@@ -270,12 +270,12 @@ class ImprovedOCRGuidedDetector:
                 'original_location': location
             })
             
-            print(f"   创建搜索区域: [{new_x1}, {new_y1}, {new_x2}, {new_y2}] (基于文本: {text})")
+            print(f"   Created search region: [{new_x1}, {new_y1}, {new_x2}, {new_y2}] (Based on text: {text})")
         
         return search_regions
     
     def detect_scale_in_regions(self, image_path, search_regions):
-        """在指定区域内检测比例尺"""
+        """Detect scale bars in specified regions"""
         results = []
         
         for region_info in search_regions:
@@ -283,7 +283,7 @@ class ImprovedOCRGuidedDetector:
             x1, y1, x2, y2 = region
             
             if x1 >= x2 or y1 >= y2 or x1 < 0 or y1 < 0:
-                print(f"   ⚠️ 跳过无效搜索区域: [{x1}, {y1}, {x2}, {y2}]")
+                print(f"    Skipping invalid search region: [{x1}, {y1}, {x2}, {y2}]")
                 continue
             
             image = cv2.imread(image_path)
@@ -299,7 +299,7 @@ class ImprovedOCRGuidedDetector:
             cropped_image = image[y1:y2, x1:x2]
             
             if cropped_image.size == 0:
-                print(f"   ⚠️ 裁剪图片无效: [{x1}, {y1}, {x2}, {y2}]")
+                print(f"    Invalid cropped image: [{x1}, {y1}, {x2}, {y2}]")
                 continue
             
             temp_path = f"temp_crop_{x1}_{y1}.jpg"
@@ -331,7 +331,7 @@ class ImprovedOCRGuidedDetector:
         return results
     
     def detect_scale_full_image(self, image_path, conf=0.2):
-        """全图检测"""
+        """Full image detection"""
         results = self.model.predict(image_path, conf=conf, verbose=False)
         
         detections = []
@@ -348,32 +348,32 @@ class ImprovedOCRGuidedDetector:
         return detections
     
     def detect_scale_hybrid(self, image_path, conf=0.2):
-        """混合检测策略 - 优先使用全图检测，但始终显示OCR区域"""
-        print(f"🔍 改进混合检测图片: {os.path.basename(image_path)}")
+        """Hybrid detection strategy - prioritize full image detection but always show OCR regions"""
+        print(f"Improved hybrid detection for image: {os.path.basename(image_path)}")
         
-        # 1. 始终进行OCR检测文本（用于显示蓝色框和黄色虚线框）
+        # 1. Always perform OCR text detection (for displaying blue boxes and yellow dashed boxes)
         text_regions = self.find_scale_text_regions(image_path)
-        print(f"   OCR检测到 {len(text_regions)} 个文本区域")
+        print(f"   OCR detected {len(text_regions)} text regions")
         
-        # 2. 创建搜索区域（用于显示黄色虚线框）
+        # 2. Create search regions (for displaying yellow dashed boxes)
         search_regions = self.create_search_regions(image_path, text_regions)
-        print(f"   创建了 {len(search_regions)} 个搜索区域")
+        print(f"   Created {len(search_regions)} search regions")
         
-        # 3. 先进行全图检测
+        # 3. First perform full image detection
         full_image_results = self.detect_scale_full_image(image_path, conf)
-        print(f"   全图检测到 {len(full_image_results)} 个比例尺")
+        print(f"   Full image detection found {len(full_image_results)} scale bars")
         
-        # 4. 如果全图检测到了结果，直接使用全图结果
+        # 4. If full image detection has results, use them directly
         if len(full_image_results) > 0:
-            print(f"   ✅ 全图检测成功，使用全图检测结果")
+            print(f"    Full image detection successful, using full image results")
             ocr_guided_results = []
         else:
-            # 5. 如果全图检测没有结果，才使用OCR引导检测
-            print(f"   ⚠️ 全图检测失败，尝试OCR引导检测")
+            # 5. If full image detection has no results, try OCR-guided detection
+            print(f"    Full image detection failed, attempting OCR-guided detection")
             ocr_guided_results = self.detect_scale_in_regions(image_path, search_regions)
-            print(f"   OCR引导检测到 {len(ocr_guided_results)} 个比例尺")
+            print(f"   OCR-guided detection found {len(ocr_guided_results)} scale bars")
         
-        # 6. 合并结果
+        # 6. Merge results
         final_results = full_image_results + ocr_guided_results
         
         return {
@@ -387,33 +387,33 @@ class ImprovedOCRGuidedDetector:
         }
     
     def visualize_results(self, detection_result, output_path=None):
-        """可视化结果 - 只显示框，不显示文本标签"""
+        """Visualize results - only show boxes, no text labels"""
         image = cv2.imread(detection_result['image_path'])
         if image is None:
             return
         
         vis_image = image.copy()
         
-        # 绘制文本区域（蓝色框）
+        # Draw text regions (blue boxes)
         for region in detection_result['text_regions']:
             loc = region['location']
             x1, y1, x2, y2 = loc['left'], loc['top'], loc['left'] + loc['width'], loc['top'] + loc['height']
-            cv2.rectangle(vis_image, (x1, y1), (x2, y2), (255, 0, 0), 2)  # 蓝色框
+            cv2.rectangle(vis_image, (x1, y1), (x2, y2), (255, 0, 0), 2)  # Blue box
         
-        # 绘制搜索区域（黄色虚线框）
+        # Draw search regions (yellow dashed boxes)
         for region_info in detection_result['search_regions']:
             x1, y1, x2, y2 = region_info['region']
-            # 绘制虚线矩形
-            self.draw_dashed_rectangle(vis_image, (x1, y1), (x2, y2), (0, 255, 255), 1, 5)  # 黄色虚线框
+            # Draw dashed rectangle
+            self.draw_dashed_rectangle(vis_image, (x1, y1), (x2, y2), (0, 255, 255), 1, 5)  # Yellow dashed box
         
-        # 绘制检测结果（绿色和红色框）
+        # Draw detection results (green and red boxes)
         for result in detection_result['final_results']:
             x1, y1, x2, y2 = map(int, result['bbox'])
             
             if result['detection_method'] == 'ocr_guided':
-                color = (0, 255, 0)  # 绿色
+                color = (0, 255, 0)  # Green
             else:
-                color = (0, 0, 255)  # 红色
+                color = (0, 0, 255)  # Red
             
             cv2.rectangle(vis_image, (x1, y1), (x2, y2), color, 2)
             cv2.circle(vis_image, (x1, y1), 3, color, -1)
@@ -421,23 +421,23 @@ class ImprovedOCRGuidedDetector:
         
         if output_path:
             cv2.imwrite(output_path, vis_image)
-            print(f"✅ 框标记结果已保存: {output_path}")
+            print(f" Box annotation results saved to: {output_path}")
         
         return vis_image
     
     def draw_dashed_rectangle(self, img, pt1, pt2, color, thickness, dash_length):
-        """绘制虚线矩形"""
+        """Draw dashed rectangle"""
         x1, y1 = pt1
         x2, y2 = pt2
         
-        # 绘制四条边
-        self.draw_dashed_line(img, (x1, y1), (x2, y1), color, thickness, dash_length)  # 上边
-        self.draw_dashed_line(img, (x2, y1), (x2, y2), color, thickness, dash_length)  # 右边
-        self.draw_dashed_line(img, (x2, y2), (x1, y2), color, thickness, dash_length)  # 下边
-        self.draw_dashed_line(img, (x1, y2), (x1, y1), color, thickness, dash_length)  # 左边
+        # Draw four sides
+        self.draw_dashed_line(img, (x1, y1), (x2, y1), color, thickness, dash_length)  # Top side
+        self.draw_dashed_line(img, (x2, y1), (x2, y2), color, thickness, dash_length)  # Right side
+        self.draw_dashed_line(img, (x2, y2), (x1, y2), color, thickness, dash_length)  # Bottom side
+        self.draw_dashed_line(img, (x1, y2), (x1, y1), color, thickness, dash_length)  # Left side
     
     def draw_dashed_line(self, img, pt1, pt2, color, thickness, dash_length):
-        """绘制虚线"""
+        """Draw dashed line"""
         x1, y1 = pt1
         x2, y2 = pt2
         
@@ -445,11 +445,11 @@ class ImprovedOCRGuidedDetector:
         if dist == 0:
             return
         
-        # 计算单位向量
+        # Calculate unit vector
         dx = (x2-x1) / dist
         dy = (y2-y1) / dist
         
-        # 绘制虚线
+        # Draw dashed line
         current_x, current_y = x1, y1
         while np.sqrt((current_x-x1)**2 + (current_y-y1)**2) < dist:
             end_x = min(current_x + dx * dash_length, x2)
@@ -459,10 +459,10 @@ class ImprovedOCRGuidedDetector:
             current_y += dy * dash_length * 2
 
 def test_improved_detector():
-    print("🧪 测试改进的百度OCR引导检测器")
+    print(" Testing Improved Baidu OCR-Guided Detector")
     print("="*60)
     
-    # 使用新的百度OCR token
+    # Use new Baidu OCR token
     access_token = "24.dcbfab13dd1bfc87f773ba9d8ea60612.2592000.1757434451.282335-119495206"
     
     model_path = "weights/epoch80.pt"
@@ -474,19 +474,19 @@ def test_improved_detector():
     try:
         detector = ImprovedOCRGuidedDetector(model_path, access_token)
     except Exception as e:
-        print(f"❌ 检测器初始化失败: {e}")
+        print(f" Detector initialization failed: {e}")
         return
     
-    test_images = ['306.png']  # 测试309.png
+    test_images = ['306.png']  # Test 309.png
     
     for img_name in test_images:
         img_path = os.path.join(images_dir, img_name)
         
         if not os.path.exists(img_path):
-            print(f"❌ 图片不存在: {img_path}")
+            print(f" Image does not exist: {img_path}")
             continue
         
-        print(f"\n📸 处理图片: {img_name}")
+        print(f"\n Processing image: {img_name}")
         
         try:
             result = detector.detect_scale_hybrid(img_path, conf=0.2)
@@ -494,12 +494,12 @@ def test_improved_detector():
             output_path = os.path.join(output_dir, f"{img_name.replace('.png', '')}_baidu_ocr.png")
             detector.visualize_results(result, output_path)
             
-            print(f"   总检测数: {result['total_detections']}")
-            print(f"   OCR引导检测: {len(result['ocr_guided_results'])}")
-            print(f"   全图检测: {len(result['full_image_results'])}")
+            print(f"   Total detections: {result['total_detections']}")
+            print(f"   OCR-guided detections: {len(result['ocr_guided_results'])}")
+            print(f"   Full image detections: {len(result['full_image_results'])}")
             
         except Exception as e:
-            print(f"❌ 处理图片 {img_name} 时出错: {e}")
+            print(f" Error processing image {img_name}: {e}")
 
 if __name__ == '__main__':
     test_improved_detector()
