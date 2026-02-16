@@ -11,20 +11,7 @@ This repository contains the official implementation of the paper **MU-KAN: An E
 - **User-Friendly Web Service**: An interactive web application supporting single/batch image processing, real-time visualization, and statistical report export (no local environment configuration required).
 - **State-of-the-Art Performance**: Achieves average F1-scores of 0.9630 (NanoSEM-464) and 0.9029 (NanoSEM-1707), significantly outperforming mainstream segmentation methods (U-KAN, DeepLabv3+, TransUNet, etc.).
 
-## Paper & Citation
-If you use this code, dataset, or related results in your research, please cite our paper:
-```bibtex
-@article{MU-KAN2025,
-  title={MU-KAN: An End-to-End Framework for Robust Nanoparticle Segmentation and Automated Size Measurement in SEM Images},
-  author={[Author List]},
-  journal={[Journal Name]},
-  year={2025},
-  volume={[Volume]},
-  pages={[Pages]},
-  doi={[DOI Number]}
-}
-```
-Full paper and supplementary materials: [https://github.com/hxy434/MU-KAN](https://github.com/hxy434/MU-KAN)
+
 
 ## Main Contributions
 1. Propose MU-KAN, one of the first attempts to integrate KANs with multi-scale feature encoding for quantitative nanoparticle segmentation in SEM imaging, substantially improving boundary robustness for noisy, low-contrast, and highly overlapped particles.
