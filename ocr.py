@@ -28,12 +28,7 @@ def process(image_path, access_token):
     
 
 def get_file_content_as_base64(path, urlencoded=False):
-    """
-    获取文件base64编码
-    :param path: 文件路径
-    :param urlencoded: 是否对结果进行urlencoded 
-    :return: base64编码信息
-    """
+
     with open(path, "rb") as f:
         content = base64.b64encode(f.read()).decode("utf8")
         if urlencoded:
@@ -42,7 +37,7 @@ def get_file_content_as_base64(path, urlencoded=False):
 
 def is_number(s):
     try:
-        float(s)  # 尝试转换为 float
+        float(s)  
         return True
     except ValueError:
         return False
@@ -56,7 +51,7 @@ if __name__ == '__main__':
     save_path = "orc_test_images/results/6.jpg"
     access_token = "24.7774c8e19ead52ab4031be41030b4c3b.2592000.1752027000.282335-119170487"
 
-    # 获取 OCR 结果
+   
     result = process(image_path, access_token)
 
     print(result)
@@ -69,7 +64,7 @@ if __name__ == '__main__':
 
     words_result_num = result["words_result_num"]
     words_result = result["words_result"]
-    # 找出 "nm" 所在位置
+  
     box = None
     box_number = None
     for item in words_result:
@@ -87,7 +82,7 @@ if __name__ == '__main__':
             if ss in words:
                 box = [left, top, width, height]
                 if words == ss:
-                    # 查找左边或者上方附近是否有数字
+              
                     for item2 in words_result:
                         words2 = item2["words"]
                         location2 = item2["location"]
