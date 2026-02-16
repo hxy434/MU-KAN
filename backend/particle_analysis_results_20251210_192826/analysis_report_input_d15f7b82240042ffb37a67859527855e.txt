@@ -1,0 +1,113 @@
+Particle Analysis Report
+==================================================
+Analysis Time: 2025-12-10 20:02:40
+Method: MU-KAN Segmentation and YOLOv11 Detection
+Scale Unit: μm
+Scale Length (pixels): 154.09248593518478
+OCR Detected Physical Length: 0.5 μm
+Scale Start Coordinates: (28, 474)
+Scale End Coordinates: (182, 481)
+Scale Angle: 2.6°
+Pixel to Physical Unit Ratio: 0.00324480455335319
+
+Detection Results Statistics:
+  Number of Particles Detected: 23
+  Average Area: 0.00 μm²
+  Average Diameter: 0.06 μm
+  Average Circularity: 0.883
+  Area Standard Deviation: 0.00 μm²
+  Diameter Standard Deviation: 0.02 μm
+
+Detailed Particle Information:
+  Particle 1:
+    Area: 0.00 μm²
+    Diameter: 0.07 μm
+    Circularity: 0.820
+  Particle 2:
+    Area: 0.01 μm²
+    Diameter: 0.09 μm
+    Circularity: 0.511
+  Particle 3:
+    Area: 0.00 μm²
+    Diameter: 0.04 μm
+    Circularity: 0.868
+  Particle 4:
+    Area: 0.00 μm²
+    Diameter: 0.06 μm
+    Circularity: 0.854
+  Particle 5:
+    Area: 0.00 μm²
+    Diameter: 0.04 μm
+    Circularity: 0.867
+  Particle 6:
+    Area: 0.00 μm²
+    Diameter: 0.07 μm
+    Circularity: 0.918
+  Particle 7:
+    Area: 0.01 μm²
+    Diameter: 0.09 μm
+    Circularity: 0.627
+  Particle 8:
+    Area: 0.00 μm²
+    Diameter: 0.05 μm
+    Circularity: 0.854
+  Particle 9:
+    Area: 0.00 μm²
+    Diameter: 0.07 μm
+    Circularity: 0.850
+  Particle 10:
+    Area: 0.00 μm²
+    Diameter: 0.08 μm
+    Circularity: 0.918
+  Particle 11:
+    Area: 0.00 μm²
+    Diameter: 0.04 μm
+    Circularity: 0.904
+  Particle 12:
+    Area: 0.00 μm²
+    Diameter: 0.06 μm
+    Circularity: 0.966
+  Particle 13:
+    Area: 0.00 μm²
+    Diameter: 0.06 μm
+    Circularity: 0.829
+  Particle 14:
+    Area: 0.00 μm²
+    Diameter: 0.06 μm
+    Circularity: 0.964
+  Particle 15:
+    Area: 0.00 μm²
+    Diameter: 0.06 μm
+    Circularity: 0.843
+  Particle 16:
+    Area: 0.00 μm²
+    Diameter: 0.06 μm
+    Circularity: 1.027
+  Particle 17:
+    Area: 0.00 μm²
+    Diameter: 0.07 μm
+    Circularity: 0.801
+  Particle 18:
+    Area: 0.00 μm²
+    Diameter: 0.07 μm
+    Circularity: 0.962
+  Particle 19:
+    Area: 0.00 μm²
+    Diameter: 0.07 μm
+    Circularity: 0.938
+  Particle 20:
+    Area: 0.00 μm²
+    Diameter: 0.08 μm
+    Circularity: 0.955
+  Particle 21:
+    Area: 0.00 μm²
+    Diameter: 0.06 μm
+    Circularity: 0.803
+  Particle 22:
+    Area: 0.00 μm²
+    Diameter: 0.01 μm
+    Circularity: 1.396
+  Particle 23:
+    Area: 0.00 μm²
+    Diameter: 0.04 μm
+    Circularity: 0.838

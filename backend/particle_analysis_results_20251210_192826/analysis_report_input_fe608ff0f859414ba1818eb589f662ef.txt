@@ -1,0 +1,877 @@
+Particle Analysis Report
+==================================================
+Analysis Time: 2025-12-10 20:06:41
+Method: MU-KAN Segmentation and YOLOv11 Detection
+Scale Unit: m
+Scale Length (pixels): 26.172969502228
+OCR Detected Physical Length: 20.0 m
+Scale Start Coordinates: (57, 461)
+Scale End Coordinates: (83, 466)
+Scale Angle: 10.9°
+Pixel to Physical Unit Ratio: 0.7641471480069344
+
+Detection Results Statistics:
+  Number of Particles Detected: 214
+  Average Area: 35.46 m²
+  Average Diameter: 6.48 m
+  Average Circularity: 1.057
+  Area Standard Deviation: 17.86 m²
+  Diameter Standard Deviation: 1.79 m
+
+Detailed Particle Information:
+  Particle 1:
+    Area: 86.42 m²
+    Diameter: 10.49 m
+    Circularity: 1.007
+  Particle 2:
+    Area: 91.68 m²
+    Diameter: 10.80 m
+    Circularity: 0.941
+  Particle 3:
+    Area: 51.39 m²
+    Diameter: 8.09 m
+    Circularity: 0.912
+  Particle 4:
+    Area: 63.06 m²
+    Diameter: 8.96 m
+    Circularity: 0.761
+  Particle 5:
+    Area: 29.20 m²
+    Diameter: 6.10 m
+    Circularity: 1.123
+  Particle 6:
+    Area: 49.05 m²
+    Diameter: 7.90 m
+    Circularity: 0.932
+  Particle 7:
+    Area: 19.85 m²
+    Diameter: 5.03 m
+    Circularity: 1.106
+  Particle 8:
+    Area: 37.37 m²
+    Diameter: 6.90 m
+    Circularity: 0.762
+  Particle 9:
+    Area: 7.01 m²
+    Diameter: 2.99 m
+    Circularity: 1.508
+  Particle 10:
+    Area: 40.87 m²
+    Diameter: 7.21 m
+    Circularity: 1.024
+  Particle 11:
+    Area: 42.04 m²
+    Diameter: 7.32 m
+    Circularity: 0.827
+  Particle 12:
+    Area: 50.22 m²
+    Diameter: 8.00 m
+    Circularity: 0.974
+  Particle 13:
+    Area: 25.69 m²
+    Diameter: 5.72 m
+    Circularity: 1.217
+  Particle 14:
+    Area: 15.77 m²
+    Diameter: 4.48 m
+    Circularity: 1.198
+  Particle 15:
+    Area: 49.05 m²
+    Diameter: 7.90 m
+    Circularity: 0.932
+  Particle 16:
+    Area: 22.77 m²
+    Diameter: 5.38 m
+    Circularity: 0.969
+  Particle 17:
+    Area: 5.26 m²
+    Diameter: 2.59 m
+    Circularity: 1.451
+  Particle 18:
+    Area: 52.55 m²
+    Diameter: 8.18 m
+    Circularity: 1.019
+  Particle 19:
+    Area: 25.11 m²
+    Diameter: 5.65 m
+    Circularity: 1.069
+  Particle 20:
+    Area: 5.26 m²
+    Diameter: 2.59 m
+    Circularity: 1.451
+  Particle 21:
+    Area: 80.00 m²
+    Diameter: 10.09 m
+    Circularity: 0.912
+  Particle 22:
+    Area: 65.40 m²
+    Diameter: 9.13 m
+    Circularity: 0.787
+  Particle 23:
+    Area: 15.77 m²
+    Diameter: 4.48 m
+    Circularity: 1.198
+  Particle 24:
+    Area: 39.12 m²
+    Diameter: 7.06 m
+    Circularity: 1.063
+  Particle 25:
+    Area: 46.71 m²
+    Diameter: 7.71 m
+    Circularity: 0.780
+  Particle 26:
+    Area: 21.02 m²
+    Diameter: 5.17 m
+    Circularity: 1.131
+  Particle 27:
+    Area: 15.77 m²
+    Diameter: 4.48 m
+    Circularity: 1.198
+  Particle 28:
+    Area: 45.55 m²
+    Diameter: 7.62 m
+    Circularity: 1.141
+  Particle 29:
+    Area: 2.34 m²
+    Diameter: 1.72 m
+    Circularity: 1.396
+  Particle 30:
+    Area: 14.01 m²
+    Diameter: 4.22 m
+    Circularity: 1.230
+  Particle 31:
+    Area: 10.51 m²
+    Diameter: 3.66 m
+    Circularity: 1.154
+  Particle 32:
+    Area: 49.05 m²
+    Diameter: 7.90 m
+    Circularity: 0.932
+  Particle 33:
+    Area: 41.46 m²
+    Diameter: 7.27 m
+    Circularity: 1.127
+  Particle 34:
+    Area: 51.39 m²
+    Diameter: 8.09 m
+    Circularity: 0.780
+  Particle 35:
+    Area: 18.10 m²
+    Diameter: 4.80 m
+    Circularity: 1.140
+  Particle 36:
+    Area: 38.54 m²
+    Diameter: 7.00 m
+    Circularity: 0.965
+  Particle 37:
+    Area: 93.43 m²
+    Diameter: 10.91 m
+    Circularity: 0.502
+  Particle 38:
+    Area: 37.37 m²
+    Diameter: 6.90 m
+    Circularity: 1.026
+  Particle 39:
+    Area: 50.80 m²
+    Diameter: 8.04 m
+    Circularity: 1.014
+  Particle 40:
+    Area: 11.68 m²
+    Diameter: 3.86 m
+    Circularity: 1.282
+  Particle 41:
+    Area: 8.76 m²
+    Diameter: 3.34 m
+    Circularity: 1.145
+  Particle 42:
+    Area: 36.20 m²
+    Diameter: 6.79 m
+    Circularity: 1.019
+  Particle 43:
+    Area: 40.87 m²
+    Diameter: 7.21 m
+    Circularity: 1.024
+  Particle 44:
+    Area: 60.73 m²
+    Diameter: 8.79 m
+    Circularity: 0.867
+  Particle 45:
+    Area: 49.63 m²
+    Diameter: 7.95 m
+    Circularity: 1.034
+  Particle 46:
+    Area: 22.77 m²
+    Diameter: 5.38 m
+    Circularity: 1.130
+  Particle 47:
+    Area: 61.31 m²
+    Diameter: 8.84 m
+    Circularity: 0.924
+  Particle 48:
+    Area: 46.71 m²
+    Diameter: 7.71 m
+    Circularity: 1.048
+  Particle 49:
+    Area: 31.53 m²
+    Diameter: 6.34 m
+    Circularity: 1.059
+  Particle 50:
+    Area: 55.47 m²
+    Diameter: 8.40 m
+    Circularity: 1.004
+  Particle 51:
+    Area: 14.01 m²
+    Diameter: 4.22 m
+    Circularity: 1.230
+  Particle 52:
+    Area: 37.37 m²
+    Diameter: 6.90 m
+    Circularity: 1.026
+  Particle 53:
+    Area: 37.37 m²
+    Diameter: 6.90 m
+    Circularity: 0.762
+  Particle 54:
+    Area: 47.30 m²
+    Diameter: 7.76 m
+    Circularity: 1.095
+  Particle 55:
+    Area: 39.71 m²
+    Diameter: 7.11 m
+    Circularity: 0.899
+  Particle 56:
+    Area: 34.45 m²
+    Diameter: 6.62 m
+    Circularity: 1.057
+  Particle 57:
+    Area: 46.71 m²
+    Diameter: 7.71 m
+    Circularity: 0.857
+  Particle 58:
+    Area: 39.12 m²
+    Diameter: 7.06 m
+    Circularity: 1.063
+  Particle 59:
+    Area: 23.36 m²
+    Diameter: 5.45 m
+    Circularity: 1.039
+  Particle 60:
+    Area: 29.20 m²
+    Diameter: 6.10 m
+    Circularity: 1.123
+  Particle 61:
+    Area: 30.95 m²
+    Diameter: 6.28 m
+    Circularity: 1.143
+  Particle 62:
+    Area: 38.54 m²
+    Diameter: 7.00 m
+    Circularity: 1.084
+  Particle 63:
+    Area: 47.30 m²
+    Diameter: 7.76 m
+    Circularity: 1.095
+  Particle 64:
+    Area: 58.39 m²
+    Diameter: 8.62 m
+    Circularity: 0.886
+  Particle 65:
+    Area: 4.67 m²
+    Diameter: 2.44 m
+    Circularity: 1.571
+  Particle 66:
+    Area: 7.01 m²
+    Diameter: 2.99 m
+    Circularity: 1.508
+  Particle 67:
+    Area: 53.72 m²
+    Diameter: 8.27 m
+    Circularity: 1.042
+  Particle 68:
+    Area: 40.87 m²
+    Diameter: 7.21 m
+    Circularity: 1.024
+  Particle 69:
+    Area: 30.95 m²
+    Diameter: 6.28 m
+    Circularity: 1.080
+  Particle 70:
+    Area: 23.36 m²
+    Diameter: 5.45 m
+    Circularity: 1.039
+  Particle 71:
+    Area: 2.34 m²
+    Diameter: 1.72 m
+    Circularity: 3.142
+  Particle 72:
+    Area: 39.12 m²
+    Diameter: 7.06 m
+    Circularity: 1.063
+  Particle 73:
+    Area: 25.69 m²
+    Diameter: 5.72 m
+    Circularity: 1.009
+  Particle 74:
+    Area: 57.81 m²
+    Diameter: 8.58 m
+    Circularity: 1.089
+  Particle 75:
+    Area: 32.70 m²
+    Diameter: 6.45 m
+    Circularity: 0.978
+  Particle 76:
+    Area: 44.38 m²
+    Diameter: 7.52 m
+    Circularity: 0.843
+  Particle 77:
+    Area: 81.75 m²
+    Diameter: 10.20 m
+    Circularity: 0.844
+  Particle 78:
+    Area: 21.02 m²
+    Diameter: 5.17 m
+    Circularity: 0.868
+  Particle 79:
+    Area: 44.96 m²
+    Diameter: 7.57 m
+    Circularity: 1.090
+  Particle 80:
+    Area: 32.70 m²
+    Diameter: 6.45 m
+    Circularity: 1.041
+  Particle 81:
+    Area: 43.21 m²
+    Diameter: 7.42 m
+    Circularity: 1.082
+  Particle 82:
+    Area: 5.26 m²
+    Diameter: 2.59 m
+    Circularity: 1.451
+  Particle 83:
+    Area: 36.79 m²
+    Diameter: 6.84 m
+    Circularity: 1.129
+  Particle 84:
+    Area: 27.44 m²
+    Diameter: 5.91 m
+    Circularity: 1.168
+  Particle 85:
+    Area: 35.04 m²
+    Diameter: 6.68 m
+    Circularity: 1.177
+  Particle 86:
+    Area: 35.04 m²
+    Diameter: 6.68 m
+    Circularity: 1.003
+  Particle 87:
+    Area: 32.70 m²
+    Diameter: 6.45 m
+    Circularity: 0.692
+  Particle 88:
+    Area: 35.04 m²
+    Diameter: 6.68 m
+    Circularity: 0.986
+  Particle 89:
+    Area: 23.36 m²
+    Diameter: 5.45 m
+    Circularity: 1.107
+  Particle 90:
+    Area: 43.21 m²
+    Diameter: 7.42 m
+    Circularity: 1.082
+  Particle 91:
+    Area: 30.95 m²
+    Diameter: 6.28 m
+    Circularity: 1.080
+  Particle 92:
+    Area: 46.71 m²
+    Diameter: 7.71 m
+    Circularity: 0.755
+  Particle 93:
+    Area: 40.87 m²
+    Diameter: 7.21 m
+    Circularity: 1.024
+  Particle 94:
+    Area: 49.05 m²
+    Diameter: 7.90 m
+    Circularity: 0.793
+  Particle 95:
+    Area: 30.95 m²
+    Diameter: 6.28 m
+    Circularity: 1.080
+  Particle 96:
+    Area: 22.77 m²
+    Diameter: 5.38 m
+    Circularity: 1.130
+  Particle 97:
+    Area: 22.77 m²
+    Diameter: 5.38 m
+    Circularity: 1.130
+  Particle 98:
+    Area: 37.37 m²
+    Diameter: 6.90 m
+    Circularity: 1.051
+  Particle 99:
+    Area: 28.03 m²
+    Diameter: 5.97 m
+    Circularity: 0.838
+  Particle 100:
+    Area: 44.96 m²
+    Diameter: 7.57 m
+    Circularity: 1.041
+  Particle 101:
+    Area: 19.85 m²
+    Diameter: 5.03 m
+    Circularity: 1.106
+  Particle 102:
+    Area: 17.52 m²
+    Diameter: 4.72 m
+    Circularity: 1.164
+  Particle 103:
+    Area: 37.37 m²
+    Diameter: 6.90 m
+    Circularity: 1.106
+  Particle 104:
+    Area: 7.01 m²
+    Diameter: 2.99 m
+    Circularity: 1.157
+  Particle 105:
+    Area: 44.38 m²
+    Diameter: 7.52 m
+    Circularity: 0.873
+  Particle 106:
+    Area: 51.39 m²
+    Diameter: 8.09 m
+    Circularity: 0.943
+  Particle 107:
+    Area: 38.54 m²
+    Diameter: 7.00 m
+    Circularity: 1.084
+  Particle 108:
+    Area: 37.37 m²
+    Diameter: 6.90 m
+    Circularity: 1.106
+  Particle 109:
+    Area: 32.70 m²
+    Diameter: 6.45 m
+    Circularity: 0.978
+  Particle 110:
+    Area: 19.85 m²
+    Diameter: 5.03 m
+    Circularity: 1.106
+  Particle 111:
+    Area: 14.01 m²
+    Diameter: 4.22 m
+    Circularity: 1.178
+  Particle 112:
+    Area: 39.12 m²
+    Diameter: 7.06 m
+    Circularity: 1.063
+  Particle 113:
+    Area: 38.54 m²
+    Diameter: 7.00 m
+    Circularity: 1.084
+  Particle 114:
+    Area: 16.35 m²
+    Diameter: 4.56 m
+    Circularity: 0.993
+  Particle 115:
+    Area: 23.36 m²
+    Diameter: 5.45 m
+    Circularity: 0.965
+  Particle 116:
+    Area: 45.55 m²
+    Diameter: 7.62 m
+    Circularity: 1.141
+  Particle 117:
+    Area: 33.87 m²
+    Diameter: 6.57 m
+    Circularity: 1.137
+  Particle 118:
+    Area: 32.70 m²
+    Diameter: 6.45 m
+    Circularity: 0.978
+  Particle 119:
+    Area: 33.28 m²
+    Diameter: 6.51 m
+    Circularity: 1.076
+  Particle 120:
+    Area: 51.39 m²
+    Diameter: 8.09 m
+    Circularity: 0.943
+  Particle 121:
+    Area: 53.72 m²
+    Diameter: 8.27 m
+    Circularity: 0.953
+  Particle 122:
+    Area: 33.28 m²
+    Diameter: 6.51 m
+    Circularity: 1.021
+  Particle 123:
+    Area: 30.95 m²
+    Diameter: 6.28 m
+    Circularity: 1.080
+  Particle 124:
+    Area: 19.85 m²
+    Diameter: 5.03 m
+    Circularity: 1.106
+  Particle 125:
+    Area: 11.68 m²
+    Diameter: 3.86 m
+    Circularity: 1.058
+  Particle 126:
+    Area: 17.52 m²
+    Diameter: 4.72 m
+    Circularity: 1.164
+  Particle 127:
+    Area: 21.61 m²
+    Diameter: 5.24 m
+    Circularity: 1.072
+  Particle 128:
+    Area: 38.54 m²
+    Diameter: 7.00 m
+    Circularity: 0.965
+  Particle 129:
+    Area: 63.65 m²
+    Diameter: 9.00 m
+    Circularity: 0.959
+  Particle 130:
+    Area: 35.04 m²
+    Diameter: 6.68 m
+    Circularity: 0.857
+  Particle 131:
+    Area: 12.26 m²
+    Diameter: 3.95 m
+    Circularity: 0.932
+  Particle 132:
+    Area: 43.21 m²
+    Diameter: 7.42 m
+    Circularity: 1.082
+  Particle 133:
+    Area: 33.28 m²
+    Diameter: 6.51 m
+    Circularity: 1.021
+  Particle 134:
+    Area: 49.05 m²
+    Diameter: 7.90 m
+    Circularity: 0.932
+  Particle 135:
+    Area: 35.04 m²
+    Diameter: 6.68 m
+    Circularity: 0.714
+  Particle 136:
+    Area: 27.44 m²
+    Diameter: 5.91 m
+    Circularity: 1.168
+  Particle 137:
+    Area: 23.36 m²
+    Diameter: 5.45 m
+    Circularity: 1.107
+  Particle 138:
+    Area: 25.11 m²
+    Diameter: 5.65 m
+    Circularity: 1.069
+  Particle 139:
+    Area: 39.12 m²
+    Diameter: 7.06 m
+    Circularity: 1.063
+  Particle 140:
+    Area: 14.01 m²
+    Diameter: 4.22 m
+    Circularity: 1.230
+  Particle 141:
+    Area: 44.38 m²
+    Diameter: 7.52 m
+    Circularity: 0.843
+  Particle 142:
+    Area: 74.16 m²
+    Diameter: 9.72 m
+    Circularity: 0.990
+  Particle 143:
+    Area: 42.04 m²
+    Diameter: 7.32 m
+    Circularity: 0.952
+  Particle 144:
+    Area: 45.55 m²
+    Diameter: 7.62 m
+    Circularity: 1.141
+  Particle 145:
+    Area: 23.36 m²
+    Diameter: 5.45 m
+    Circularity: 0.965
+  Particle 146:
+    Area: 47.30 m²
+    Diameter: 7.76 m
+    Circularity: 1.095
+  Particle 147:
+    Area: 37.37 m²
+    Diameter: 6.90 m
+    Circularity: 1.051
+  Particle 148:
+    Area: 36.79 m²
+    Diameter: 6.84 m
+    Circularity: 0.953
+  Particle 149:
+    Area: 39.71 m²
+    Diameter: 7.11 m
+    Circularity: 0.934
+  Particle 150:
+    Area: 32.70 m²
+    Diameter: 6.45 m
+    Circularity: 0.967
+  Particle 151:
+    Area: 40.87 m²
+    Diameter: 7.21 m
+    Circularity: 1.024
+  Particle 152:
+    Area: 32.70 m²
+    Diameter: 6.45 m
+    Circularity: 0.833
+  Particle 153:
+    Area: 17.52 m²
+    Diameter: 4.72 m
+    Circularity: 1.164
+  Particle 154:
+    Area: 35.04 m²
+    Diameter: 6.68 m
+    Circularity: 1.177
+  Particle 155:
+    Area: 3.50 m²
+    Diameter: 2.11 m
+    Circularity: 2.094
+  Particle 156:
+    Area: 84.08 m²
+    Diameter: 10.35 m
+    Circularity: 0.980
+  Particle 157:
+    Area: 37.37 m²
+    Diameter: 6.90 m
+    Circularity: 0.914
+  Particle 158:
+    Area: 18.69 m²
+    Diameter: 4.88 m
+    Circularity: 0.857
+  Particle 159:
+    Area: 32.70 m²
+    Diameter: 6.45 m
+    Circularity: 0.978
+  Particle 160:
+    Area: 38.54 m²
+    Diameter: 7.00 m
+    Circularity: 1.084
+  Particle 161:
+    Area: 7.01 m²
+    Diameter: 2.99 m
+    Circularity: 1.508
+  Particle 162:
+    Area: 35.62 m²
+    Diameter: 6.73 m
+    Circularity: 1.093
+  Particle 163:
+    Area: 47.30 m²
+    Diameter: 7.76 m
+    Circularity: 1.095
+  Particle 164:
+    Area: 41.46 m²
+    Diameter: 7.27 m
+    Circularity: 1.127
+  Particle 165:
+    Area: 65.40 m²
+    Diameter: 9.13 m
+    Circularity: 0.859
+  Particle 166:
+    Area: 27.44 m²
+    Diameter: 5.91 m
+    Circularity: 1.168
+  Particle 167:
+    Area: 42.04 m²
+    Diameter: 7.32 m
+    Circularity: 0.827
+  Particle 168:
+    Area: 44.38 m²
+    Diameter: 7.52 m
+    Circularity: 0.843
+  Particle 169:
+    Area: 52.55 m²
+    Diameter: 8.18 m
+    Circularity: 1.019
+  Particle 170:
+    Area: 29.78 m²
+    Diameter: 6.16 m
+    Circularity: 1.100
+  Particle 171:
+    Area: 42.63 m²
+    Diameter: 7.37 m
+    Circularity: 0.987
+  Particle 172:
+    Area: 14.01 m²
+    Diameter: 4.22 m
+    Circularity: 1.178
+  Particle 173:
+    Area: 33.28 m²
+    Diameter: 6.51 m
+    Circularity: 1.021
+  Particle 174:
+    Area: 37.37 m²
+    Diameter: 6.90 m
+    Circularity: 1.051
+  Particle 175:
+    Area: 45.55 m²
+    Diameter: 7.62 m
+    Circularity: 1.141
+  Particle 176:
+    Area: 47.30 m²
+    Diameter: 7.76 m
+    Circularity: 0.985
+  Particle 177:
+    Area: 44.96 m²
+    Diameter: 7.57 m
+    Circularity: 0.937
+  Particle 178:
+    Area: 19.85 m²
+    Diameter: 5.03 m
+    Circularity: 1.106
+  Particle 179:
+    Area: 28.03 m²
+    Diameter: 5.97 m
+    Circularity: 0.876
+  Particle 180:
+    Area: 70.07 m²
+    Diameter: 9.45 m
+    Circularity: 1.083
+  Particle 181:
+    Area: 58.39 m²
+    Diameter: 8.62 m
+    Circularity: 0.988
+  Particle 182:
+    Area: 21.02 m²
+    Diameter: 5.17 m
+    Circularity: 0.914
+  Particle 183:
+    Area: 39.12 m²
+    Diameter: 7.06 m
+    Circularity: 1.063
+  Particle 184:
+    Area: 25.69 m²
+    Diameter: 5.72 m
+    Circularity: 0.840
+  Particle 185:
+    Area: 37.37 m²
+    Diameter: 6.90 m
+    Circularity: 0.914
+  Particle 186:
+    Area: 12.26 m²
+    Diameter: 3.95 m
+    Circularity: 1.258
+  Particle 187:
+    Area: 35.62 m²
+    Diameter: 6.73 m
+    Circularity: 1.093
+  Particle 188:
+    Area: 30.95 m²
+    Diameter: 6.28 m
+    Circularity: 1.080
+  Particle 189:
+    Area: 18.69 m²
+    Diameter: 4.88 m
+    Circularity: 0.857
+  Particle 190:
+    Area: 45.55 m²
+    Diameter: 7.62 m
+    Circularity: 1.141
+  Particle 191:
+    Area: 52.55 m²
+    Diameter: 8.18 m
+    Circularity: 1.019
+  Particle 192:
+    Area: 8.76 m²
+    Diameter: 3.34 m
+    Circularity: 1.145
+  Particle 193:
+    Area: 54.30 m²
+    Diameter: 8.32 m
+    Circularity: 0.937
+  Particle 194:
+    Area: 56.06 m²
+    Diameter: 8.45 m
+    Circularity: 0.878
+  Particle 195:
+    Area: 34.45 m²
+    Diameter: 6.62 m
+    Circularity: 1.057
+  Particle 196:
+    Area: 100.43 m²
+    Diameter: 11.31 m
+    Circularity: 0.832
+  Particle 197:
+    Area: 31.53 m²
+    Diameter: 6.34 m
+    Circularity: 1.059
+  Particle 198:
+    Area: 9.34 m²
+    Diameter: 3.45 m
+    Circularity: 1.396
+  Particle 199:
+    Area: 42.04 m²
+    Diameter: 7.32 m
+    Circularity: 0.827
+  Particle 200:
+    Area: 37.37 m²
+    Diameter: 6.90 m
+    Circularity: 1.106
+  Particle 201:
+    Area: 55.47 m²
+    Diameter: 8.40 m
+    Circularity: 1.045
+  Particle 202:
+    Area: 25.11 m²
+    Diameter: 5.65 m
+    Circularity: 1.069
+  Particle 203:
+    Area: 12.26 m²
+    Diameter: 3.95 m
+    Circularity: 1.258
+  Particle 204:
+    Area: 59.56 m²
+    Diameter: 8.71 m
+    Circularity: 1.048
+  Particle 205:
+    Area: 32.70 m²
+    Diameter: 6.45 m
+    Circularity: 0.978
+  Particle 206:
+    Area: 11.68 m²
+    Diameter: 3.86 m
+    Circularity: 1.058
+  Particle 207:
+    Area: 7.01 m²
+    Diameter: 2.99 m
+    Circularity: 1.508
+  Particle 208:
+    Area: 35.04 m²
+    Diameter: 6.68 m
+    Circularity: 1.177
+  Particle 209:
+    Area: 7.01 m²
+    Diameter: 2.99 m
+    Circularity: 1.508
+  Particle 210:
+    Area: 51.39 m²
+    Diameter: 8.09 m
+    Circularity: 0.943
+  Particle 211:
+    Area: 23.36 m²
+    Diameter: 5.45 m
+    Circularity: 1.039
+  Particle 212:
+    Area: 18.69 m²
+    Diameter: 4.88 m
+    Circularity: 1.041
+  Particle 213:
+    Area: 18.69 m²
+    Diameter: 4.88 m
+    Circularity: 0.772
+  Particle 214:
+    Area: 7.01 m²
+    Diameter: 2.99 m
+    Circularity: 1.047

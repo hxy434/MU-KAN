@@ -1,0 +1,16 @@
+@echo off
+echo 启动粒子分割项目...
+echo.
+echo 1. 设置前端执行策略...
+powershell -Command "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force"
+echo.
+echo 2. 启动后端服务器（新窗口）...
+start "后端服务器" cmd /k "cd backend && uvicorn main:app --host 0.0.0.0 --port 8000"
+echo.
+echo 3. 等待3秒后启动前端...
+timeout /t 3 /nobreak > nul
+echo.
+echo 4. 启动前端开发服务器...
+cd frontend
+npm start
+pause

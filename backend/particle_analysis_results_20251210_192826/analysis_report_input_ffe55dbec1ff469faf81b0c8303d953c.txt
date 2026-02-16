@@ -1,0 +1,25 @@
+Particle Analysis Report
+==================================================
+Analysis Time: 2025-12-10 19:48:45
+Method: MU-KAN Segmentation and YOLOv11 Detection
+Scale Unit: nm
+Scale Length (pixels): 61.02715660252822
+OCR Detected Physical Length: 200.0 nm
+Scale Start Coordinates: (357, 500)
+Scale End Coordinates: (417, 505)
+Scale Angle: 4.8°
+Pixel to Physical Unit Ratio: 3.277229534100798
+
+Detection Results Statistics:
+  Number of Particles Detected: 1
+  Average Area: 99572.70 nm²
+  Average Diameter: 356.06 nm
+  Average Circularity: 0.896
+  Area Standard Deviation: 0.00 nm²
+  Diameter Standard Deviation: 0.00 nm
+
+Detailed Particle Information:
+  Particle 1:
+    Area: 99572.70 nm²
+    Diameter: 356.06 nm
+    Circularity: 0.896

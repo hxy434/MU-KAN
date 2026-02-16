@@ -1,0 +1,49 @@
+Particle Analysis Report
+==================================================
+Analysis Time: 2025-12-10 16:47:14
+Detection Method: MU-KAN
+Scale Unit: nm
+Scale Length (pixels): 93.93128773885071
+OCR Detected Physical Length: 50.0 nm
+Scale Start Coordinates: (2, 500)
+Scale End Coordinates: (96, 505)
+Scale Angle: 3.0°
+Pixel to Physical Unit Ratio: 0.5323039979927754
+
+Detection Results Statistics:
+  Number of Particles Detected: 7
+  Average Area: 315.85 nm²
+  Average Diameter: 19.99 nm
+  Average Circularity: 0.927
+  Area Standard Deviation: 51.98 nm²
+  Diameter Standard Deviation: 1.61 nm
+
+Detailed Particle Information:
+  Particle 1:
+    Area: 286.46 nm²
+    Diameter: 19.10 nm
+    Circularity: 0.911
+  Particle 2:
+    Area: 265.21 nm²
+    Diameter: 18.38 nm
+    Circularity: 0.923
+  Particle 3:
+    Area: 255.01 nm²
+    Diameter: 18.02 nm
+    Circularity: 0.966
+  Particle 4:
+    Area: 420.49 nm²
+    Diameter: 23.14 nm
+    Circularity: 0.892
+  Particle 5:
+    Area: 319.90 nm²
+    Diameter: 20.18 nm
+    Circularity: 0.963
+  Particle 6:
+    Area: 319.62 nm²
+    Diameter: 20.17 nm
+    Circularity: 0.944
+  Particle 7:
+    Area: 344.27 nm²
+    Diameter: 20.94 nm
+    Circularity: 0.889

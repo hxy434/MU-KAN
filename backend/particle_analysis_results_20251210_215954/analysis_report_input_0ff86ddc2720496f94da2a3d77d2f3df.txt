@@ -1,0 +1,32 @@
+Particle Analysis Report
+==================================================
+Analysis Time: 2025-12-10 22:01:25
+Method: MU-KAN Segmentation and YOLOv11 Detection
+Scale Unit: None
+Pixel to Physical Unit Ratio: None
+
+Detection Results Statistics:
+  Number of Particles Detected: 4
+  Average Area: 33208.50 None²
+  Average Diameter: 177.31 None
+  Average Circularity: 0.427
+  Area Standard Deviation: 28464.22 None²
+  Diameter Standard Deviation: 104.14 None
+
+Detailed Particle Information:
+  Particle 1:
+    Area: 68842.00 None²
+    Diameter: 296.06 None
+    Circularity: 0.273
+  Particle 2:
+    Area: 53136.00 None²
+    Diameter: 260.11 None
+    Circularity: 0.314
+  Particle 3:
+    Area: 9332.00 None²
+    Diameter: 109.00 None
+    Circularity: 0.749
+  Particle 4:
+    Area: 1524.00 None²
+    Diameter: 44.05 None
+    Circularity: 0.375

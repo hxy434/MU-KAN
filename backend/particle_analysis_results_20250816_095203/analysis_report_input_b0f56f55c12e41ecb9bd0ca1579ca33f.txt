@@ -1,0 +1,33 @@
+Particle Analysis Report
+==================================================
+Analysis Time: 2025-08-16 09:54:19
+Detection Method: UKAN
+Scale Unit: nm
+Scale Length (pixels): 99.02628086961028
+OCR Detected Physical Length: 25.0 nm
+Scale Start Coordinates: (393, 500)
+Scale End Coordinates: (491, 504)
+Scale Angle: 2.3°
+Pixel to Physical Unit Ratio: 0.2524582341218889
+
+Detection Results Statistics:
+  Number of Particles Detected: 3
+  Average Area: 819.72 nm²
+  Average Diameter: 32.24 nm
+  Average Circularity: 0.653
+  Area Standard Deviation: 105.22 nm²
+  Diameter Standard Deviation: 2.03 nm
+
+Detailed Particle Information:
+  Particle 1:
+    Area: 745.96 nm²
+    Diameter: 30.82 nm
+    Circularity: 0.658
+  Particle 2:
+    Area: 744.68 nm²
+    Diameter: 30.79 nm
+    Circularity: 0.662
+  Particle 3:
+    Area: 968.52 nm²
+    Diameter: 35.12 nm
+    Circularity: 0.637

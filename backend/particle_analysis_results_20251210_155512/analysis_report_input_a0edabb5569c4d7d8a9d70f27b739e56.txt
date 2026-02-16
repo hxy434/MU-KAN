@@ -1,0 +1,149 @@
+Particle Analysis Report
+==================================================
+Analysis Time: 2025-12-10 15:57:35
+Detection Method: MU-KAN
+Scale Unit: μm
+Scale Length (pixels): 99.0611157762545
+OCR Detected Physical Length: 100.0 μm
+Scale Start Coordinates: (404, 484)
+Scale End Coordinates: (503, 488)
+Scale Angle: 2.3°
+Pixel to Physical Unit Ratio: 1.0094778280699577
+
+Detection Results Statistics:
+  Number of Particles Detected: 32
+  Average Area: 135.85 μm²
+  Average Diameter: 13.04 μm
+  Average Circularity: 0.941
+  Area Standard Deviation: 34.32 μm²
+  Diameter Standard Deviation: 1.74 μm
+
+Detailed Particle Information:
+  Particle 1:
+    Area: 144.70 μm²
+    Diameter: 13.57 μm
+    Circularity: 1.045
+  Particle 2:
+    Area: 162.03 μm²
+    Diameter: 14.36 μm
+    Circularity: 0.915
+  Particle 3:
+    Area: 104.96 μm²
+    Diameter: 11.56 μm
+    Circularity: 0.890
+  Particle 4:
+    Area: 133.49 μm²
+    Diameter: 13.04 μm
+    Circularity: 1.022
+  Particle 5:
+    Area: 136.55 μm²
+    Diameter: 13.19 μm
+    Circularity: 0.948
+  Particle 6:
+    Area: 201.77 μm²
+    Diameter: 16.03 μm
+    Circularity: 0.924
+  Particle 7:
+    Area: 150.82 μm²
+    Diameter: 13.86 μm
+    Circularity: 0.811
+  Particle 8:
+    Area: 151.84 μm²
+    Diameter: 13.90 μm
+    Circularity: 1.072
+  Particle 9:
+    Area: 163.05 μm²
+    Diameter: 14.41 μm
+    Circularity: 0.944
+  Particle 10:
+    Area: 95.79 μm²
+    Diameter: 11.04 μm
+    Circularity: 0.966
+  Particle 11:
+    Area: 88.66 μm²
+    Diameter: 10.62 μm
+    Circularity: 1.014
+  Particle 12:
+    Area: 147.76 μm²
+    Diameter: 13.72 μm
+    Circularity: 0.965
+  Particle 13:
+    Area: 89.68 μm²
+    Diameter: 10.69 μm
+    Circularity: 0.996
+  Particle 14:
+    Area: 233.36 μm²
+    Diameter: 17.24 μm
+    Circularity: 0.821
+  Particle 15:
+    Area: 85.60 μm²
+    Diameter: 10.44 μm
+    Circularity: 1.053
+  Particle 16:
+    Area: 146.74 μm²
+    Diameter: 13.67 μm
+    Circularity: 0.980
+  Particle 17:
+    Area: 150.82 μm²
+    Diameter: 13.86 μm
+    Circularity: 0.920
+  Particle 18:
+    Area: 134.51 μm²
+    Diameter: 13.09 μm
+    Circularity: 0.838
+  Particle 19:
+    Area: 156.93 μm²
+    Diameter: 14.14 μm
+    Circularity: 0.864
+  Particle 20:
+    Area: 149.80 μm²
+    Diameter: 13.81 μm
+    Circularity: 0.963
+  Particle 21:
+    Area: 126.36 μm²
+    Diameter: 12.68 μm
+    Circularity: 1.026
+  Particle 22:
+    Area: 132.48 μm²
+    Diameter: 12.99 μm
+    Circularity: 0.848
+  Particle 23:
+    Area: 161.01 μm²
+    Diameter: 14.32 μm
+    Circularity: 0.790
+  Particle 24:
+    Area: 126.36 μm²
+    Diameter: 12.68 μm
+    Circularity: 1.026
+  Particle 25:
+    Area: 139.61 μm²
+    Diameter: 13.33 μm
+    Circularity: 0.985
+  Particle 26:
+    Area: 44.84 μm²
+    Diameter: 7.56 μm
+    Circularity: 0.840
+  Particle 27:
+    Area: 122.29 μm²
+    Diameter: 12.48 μm
+    Circularity: 0.920
+  Particle 28:
+    Area: 122.29 μm²
+    Diameter: 12.48 μm
+    Circularity: 0.976
+  Particle 29:
+    Area: 107.00 μm²
+    Diameter: 11.67 μm
+    Circularity: 1.010
+  Particle 30:
+    Area: 130.44 μm²
+    Diameter: 12.89 μm
+    Circularity: 0.813
+  Particle 31:
+    Area: 139.61 μm²
+    Diameter: 13.33 μm
+    Circularity: 0.954
+  Particle 32:
+    Area: 166.10 μm²
+    Diameter: 14.54 μm
+    Circularity: 0.977

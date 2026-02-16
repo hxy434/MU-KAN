@@ -1,0 +1,205 @@
+Particle Analysis Report
+==================================================
+Analysis Time: 2025-12-10 20:05:28
+Method: MU-KAN Segmentation and YOLOv11 Detection
+Scale Unit: um
+Scale Length (pixels): 150.99891871281017
+OCR Detected Physical Length: 5.0 um
+Scale Start Coordinates: (591, 489)
+Scale End Coordinates: (742, 496)
+Scale Angle: 2.7°
+Pixel to Physical Unit Ratio: 0.0331128198971389
+
+Detection Results Statistics:
+  Number of Particles Detected: 46
+  Average Area: 0.55 um²
+  Average Diameter: 0.78 um
+  Average Circularity: 0.897
+  Area Standard Deviation: 0.43 um²
+  Diameter Standard Deviation: 0.32 um
+
+Detailed Particle Information:
+  Particle 1:
+    Area: 0.22 um²
+    Diameter: 0.53 um
+    Circularity: 0.870
+  Particle 2:
+    Area: 0.44 um²
+    Diameter: 0.75 um
+    Circularity: 0.894
+  Particle 3:
+    Area: 0.89 um²
+    Diameter: 1.07 um
+    Circularity: 0.840
+  Particle 4:
+    Area: 1.00 um²
+    Diameter: 1.13 um
+    Circularity: 0.867
+  Particle 5:
+    Area: 0.73 um²
+    Diameter: 0.97 um
+    Circularity: 0.856
+  Particle 6:
+    Area: 0.20 um²
+    Diameter: 0.50 um
+    Circularity: 0.905
+  Particle 7:
+    Area: 0.83 um²
+    Diameter: 1.03 um
+    Circularity: 0.825
+  Particle 8:
+    Area: 0.90 um²
+    Diameter: 1.07 um
+    Circularity: 0.867
+  Particle 9:
+    Area: 0.60 um²
+    Diameter: 0.87 um
+    Circularity: 0.827
+  Particle 10:
+    Area: 0.40 um²
+    Diameter: 0.72 um
+    Circularity: 0.836
+  Particle 11:
+    Area: 0.05 um²
+    Diameter: 0.26 um
+    Circularity: 0.916
+  Particle 12:
+    Area: 1.28 um²
+    Diameter: 1.28 um
+    Circularity: 0.891
+  Particle 13:
+    Area: 1.73 um²
+    Diameter: 1.49 um
+    Circularity: 0.853
+  Particle 14:
+    Area: 0.22 um²
+    Diameter: 0.53 um
+    Circularity: 0.960
+  Particle 15:
+    Area: 0.51 um²
+    Diameter: 0.80 um
+    Circularity: 0.811
+  Particle 16:
+    Area: 0.42 um²
+    Diameter: 0.73 um
+    Circularity: 0.815
+  Particle 17:
+    Area: 0.96 um²
+    Diameter: 1.11 um
+    Circularity: 0.847
+  Particle 18:
+    Area: 0.15 um²
+    Diameter: 0.44 um
+    Circularity: 0.895
+  Particle 19:
+    Area: 0.47 um²
+    Diameter: 0.77 um
+    Circularity: 0.842
+  Particle 20:
+    Area: 0.19 um²
+    Diameter: 0.49 um
+    Circularity: 0.938
+  Particle 21:
+    Area: 1.04 um²
+    Diameter: 1.15 um
+    Circularity: 0.768
+  Particle 22:
+    Area: 0.31 um²
+    Diameter: 0.63 um
+    Circularity: 0.874
+  Particle 23:
+    Area: 0.92 um²
+    Diameter: 1.08 um
+    Circularity: 0.809
+  Particle 24:
+    Area: 1.13 um²
+    Diameter: 1.20 um
+    Circularity: 0.872
+  Particle 25:
+    Area: 0.12 um²
+    Diameter: 0.38 um
+    Circularity: 0.957
+  Particle 26:
+    Area: 0.44 um²
+    Diameter: 0.75 um
+    Circularity: 0.885
+  Particle 27:
+    Area: 1.07 um²
+    Diameter: 1.17 um
+    Circularity: 0.861
+  Particle 28:
+    Area: 1.99 um²
+    Diameter: 1.59 um
+    Circularity: 0.854
+  Particle 29:
+    Area: 0.60 um²
+    Diameter: 0.87 um
+    Circularity: 0.884
+  Particle 30:
+    Area: 0.42 um²
+    Diameter: 0.73 um
+    Circularity: 0.818
+  Particle 31:
+    Area: 0.43 um²
+    Diameter: 0.74 um
+    Circularity: 0.859
+  Particle 32:
+    Area: 0.55 um²
+    Diameter: 0.84 um
+    Circularity: 0.822
+  Particle 33:
+    Area: 0.34 um²
+    Diameter: 0.66 um
+    Circularity: 0.781
+  Particle 34:
+    Area: 0.06 um²
+    Diameter: 0.29 um
+    Circularity: 0.914
+  Particle 35:
+    Area: 0.44 um²
+    Diameter: 0.75 um
+    Circularity: 0.865
+  Particle 36:
+    Area: 0.19 um²
+    Diameter: 0.49 um
+    Circularity: 0.891
+  Particle 37:
+    Area: 0.34 um²
+    Diameter: 0.66 um
+    Circularity: 0.883
+  Particle 38:
+    Area: 0.18 um²
+    Diameter: 0.48 um
+    Circularity: 0.803
+  Particle 39:
+    Area: 0.22 um²
+    Diameter: 0.53 um
+    Circularity: 0.873
+  Particle 40:
+    Area: 0.13 um²
+    Diameter: 0.40 um
+    Circularity: 0.801
+  Particle 41:
+    Area: 0.00 um²
+    Diameter: 0.07 um
+    Circularity: 3.142
+  Particle 42:
+    Area: 0.44 um²
+    Diameter: 0.75 um
+    Circularity: 0.784
+  Particle 43:
+    Area: 0.54 um²
+    Diameter: 0.83 um
+    Circularity: 0.867
+  Particle 44:
+    Area: 0.64 um²
+    Diameter: 0.90 um
+    Circularity: 0.841
+  Particle 45:
+    Area: 0.45 um²
+    Diameter: 0.76 um
+    Circularity: 0.756
+  Particle 46:
+    Area: 0.13 um²
+    Diameter: 0.41 um
+    Circularity: 0.457

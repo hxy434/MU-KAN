@@ -1,0 +1,149 @@
+Particle Analysis Report
+==================================================
+Analysis Time: 2025-12-10 17:29:07
+Detection Method: MU-KAN
+Scale Unit: nm
+Scale Length (pixels): 99.0611157762545
+OCR Detected Physical Length: 200.0 nm
+Scale Start Coordinates: (404, 484)
+Scale End Coordinates: (503, 488)
+Scale Angle: 2.3°
+Pixel to Physical Unit Ratio: 2.0189556561399153
+
+Detection Results Statistics:
+  Number of Particles Detected: 32
+  Average Area: 543.41 nm²
+  Average Diameter: 26.07 nm
+  Average Circularity: 0.941
+  Area Standard Deviation: 137.28 nm²
+  Diameter Standard Deviation: 3.47 nm
+
+Detailed Particle Information:
+  Particle 1:
+    Area: 578.82 nm²
+    Diameter: 27.15 nm
+    Circularity: 1.045
+  Particle 2:
+    Area: 648.11 nm²
+    Diameter: 28.73 nm
+    Circularity: 0.915
+  Particle 3:
+    Area: 419.85 nm²
+    Diameter: 23.12 nm
+    Circularity: 0.890
+  Particle 4:
+    Area: 533.98 nm²
+    Diameter: 26.07 nm
+    Circularity: 1.022
+  Particle 5:
+    Area: 546.21 nm²
+    Diameter: 26.37 nm
+    Circularity: 0.948
+  Particle 6:
+    Area: 807.08 nm²
+    Diameter: 32.06 nm
+    Circularity: 0.924
+  Particle 7:
+    Area: 603.27 nm²
+    Diameter: 27.71 nm
+    Circularity: 0.811
+  Particle 8:
+    Area: 607.35 nm²
+    Diameter: 27.81 nm
+    Circularity: 1.072
+  Particle 9:
+    Area: 652.19 nm²
+    Diameter: 28.82 nm
+    Circularity: 0.944
+  Particle 10:
+    Area: 383.16 nm²
+    Diameter: 22.09 nm
+    Circularity: 0.966
+  Particle 11:
+    Area: 354.63 nm²
+    Diameter: 21.25 nm
+    Circularity: 1.014
+  Particle 12:
+    Area: 591.05 nm²
+    Diameter: 27.43 nm
+    Circularity: 0.965
+  Particle 13:
+    Area: 358.70 nm²
+    Diameter: 21.37 nm
+    Circularity: 0.996
+  Particle 14:
+    Area: 933.45 nm²
+    Diameter: 34.47 nm
+    Circularity: 0.821
+  Particle 15:
+    Area: 342.40 nm²
+    Diameter: 20.88 nm
+    Circularity: 1.053
+  Particle 16:
+    Area: 586.97 nm²
+    Diameter: 27.34 nm
+    Circularity: 0.980
+  Particle 17:
+    Area: 603.27 nm²
+    Diameter: 27.71 nm
+    Circularity: 0.920
+  Particle 18:
+    Area: 538.06 nm²
+    Diameter: 26.17 nm
+    Circularity: 0.838
+  Particle 19:
+    Area: 627.73 nm²
+    Diameter: 28.27 nm
+    Circularity: 0.864
+  Particle 20:
+    Area: 599.20 nm²
+    Diameter: 27.62 nm
+    Circularity: 0.963
+  Particle 21:
+    Area: 505.45 nm²
+    Diameter: 25.37 nm
+    Circularity: 1.026
+  Particle 22:
+    Area: 529.90 nm²
+    Diameter: 25.97 nm
+    Circularity: 0.848
+  Particle 23:
+    Area: 644.04 nm²
+    Diameter: 28.64 nm
+    Circularity: 0.790
+  Particle 24:
+    Area: 505.45 nm²
+    Diameter: 25.37 nm
+    Circularity: 1.026
+  Particle 25:
+    Area: 558.44 nm²
+    Diameter: 26.67 nm
+    Circularity: 0.985
+  Particle 26:
+    Area: 179.35 nm²
+    Diameter: 15.11 nm
+    Circularity: 0.840
+  Particle 27:
+    Area: 489.14 nm²
+    Diameter: 24.96 nm
+    Circularity: 0.920
+  Particle 28:
+    Area: 489.14 nm²
+    Diameter: 24.96 nm
+    Circularity: 0.976
+  Particle 29:
+    Area: 428.00 nm²
+    Diameter: 23.34 nm
+    Circularity: 1.010
+  Particle 30:
+    Area: 521.75 nm²
+    Diameter: 25.77 nm
+    Circularity: 0.813
+  Particle 31:
+    Area: 558.44 nm²
+    Diameter: 26.67 nm
+    Circularity: 0.954
+  Particle 32:
+    Area: 664.42 nm²
+    Diameter: 29.09 nm
+    Circularity: 0.977
