@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-粒子分析演示脚本 - 集成UKAN模型
-展示如何使用粒子分析功能
+Particle Analysis Demonstration Script - Integrated with UKAN Model
+Demonstrates how to use particle analysis functionality
 """
 
 import cv2
@@ -26,29 +26,29 @@ from PIL import Image
 import random
 from datetime import datetime
 
-# 添加seg-MOGA路径
+# Add seg-MOGA path to system path
 
 import archs
 from dataset import Dataset
 
 ACCESS_TOKEN = "24.a6279612cc9567f9aca9316df9294369.2592000.1767946592.282335-119495206"
 
-# 创建输出文件夹
+# Create output folder
 def create_output_directory():
-    """创建带时间戳的输出文件夹"""
+    """Create output directory with timestamp"""
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     output_dir = f"particle_analysis_results_{timestamp}"
     os.makedirs(output_dir, exist_ok=True)
-    print(f"📁 结果将保存到: {output_dir}")
+    print(f" Results will be saved to: {output_dir}")
     return output_dir
 
-# 全局输出目录
+# Global output directory
 OUTPUT_DIR = create_output_directory()
 
 import matplotlib
 matplotlib.rcParams['font.family'] = 'Times New Roman'
 matplotlib.rcParams['font.sans-serif'] = ['Times New Roman']
-matplotlib.rcParams['axes.unicode_minus'] = False  # 负号正常显示
+matplotlib.rcParams['axes.unicode_minus'] = False  # Ensure minus sign displays correctly
 
 def seed_torch(seed=1029):
     random.seed(seed)
@@ -61,8 +61,8 @@ def seed_torch(seed=1029):
     torch.backends.cudnn.deterministic = True
 
 def load_ukan_model():
-    """加载UKAN模型"""
-    # 加载配置文件
+    """Load UKAN model"""
+    # Load configuration file
     config_path = 'D:/python-learn/K/seg-MOGA/outputs/lizi_UKAN/config.yml'
     with open(config_path, 'r') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
@@ -72,7 +72,7 @@ def load_ukan_model():
         print('%s: %s' % (key, str(config[key])))
     print('-'*20)
     
-    # 创建模型
+    # Create model
     model = archs.__dict__[config['arch']](
         config['num_classes'],
         config['input_channels'],
@@ -81,12 +81,12 @@ def load_ukan_model():
         use_Moga=config['use_Moga']
     )
     
-    # 加载权重
+    # Load weights
     ckpt = torch.load('D:/python-learn/K/seg-MOGA/outputs/lizi_UKAN/model.pth', map_location='cpu')
     try:
         model.load_state_dict(ckpt)
     except Exception as e:
-        print("加载权重时出现异常，使用非严格模式:")
+        print("Exception occurred while loading weights, using non-strict mode:")
         print("Exception:", e)
         model.load_state_dict(ckpt, strict=False)
     
@@ -94,41 +94,41 @@ def load_ukan_model():
     return model, config
 
 def preprocess_image_for_ukan(image, config):
-    """使用与训练时完全一致的预处理"""
-    # 转换为RGB
+    """Use exactly the same preprocessing as during training"""
+    # Convert to RGB
     img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     
-    # 使用与验证时完全一致的预处理
+    # Use exactly the same preprocessing as during validation
     val_transform = Compose([
         Resize(config['input_h'], config['input_w']),
-        transforms.Normalize(),  # 与val.py中的transforms.Normalize()一致
+        transforms.Normalize(),  # Consistent with transforms.Normalize() in val.py
     ])
     
-    # 应用变换
+    # Apply transformations
     augmented = val_transform(image=img)
     img = augmented['image']
     
-    # 转换为tensor
+    # Convert to tensor
     img = img.astype('float32') / 255
     img = img.transpose(2, 0, 1)  # HWC -> CHW
-    img = torch.from_numpy(img).unsqueeze(0)  # 添加batch维度
+    img = torch.from_numpy(img).unsqueeze(0)  # Add batch dimension
     
     return img
 
 def ukan_inference(image, model, config):
-    """使用UKAN模型进行推理"""
-    # 预处理
+    """Perform inference using UKAN model"""
+    # Preprocessing
     input_tensor = preprocess_image_for_ukan(image, config)
     
-    # 推理
+    # Inference
     with torch.no_grad():
         output = model(input_tensor)
-        prob_map = torch.sigmoid(output).cpu().numpy()[0, 0]  # 取第一个batch，第一个通道
+        prob_map = torch.sigmoid(output).cpu().numpy()[0, 0]  # Take first batch, first channel
     
-    # 二值化（与val.py一致）
+    # Binarization (consistent with val.py)
     pred_mask = (prob_map >= 0.5).astype(np.uint8)
     
-    # 调整回原始图像尺寸
+    # Resize back to original image dimensions
     original_h, original_w = image.shape[:2]
     pred_mask_resized = cv2.resize(pred_mask, (original_w, original_h))
     
@@ -136,54 +136,54 @@ def ukan_inference(image, model, config):
 
 def extract_scale_length_from_ocr(image_path):
     result = ocr_process(image_path)
-    print("OCR原始结果：", result)
+    print("Raw OCR result:", result)
     words_result = result.get("words_result", [])
     for item in words_result:
         words = item["words"].replace(' ', '')
-        print(f"处理OCR文本: '{words}'")
+        print(f"Processing OCR text: '{words}'")
         for unit in ["nm", "μm", "um"]:
             if unit in words:
                 num_str = words.replace(unit, "")
                 try:
                     value = float(num_str)
-                    print(f"找到比例尺: {value} {unit} (原始识别)")
+                    print(f"Found scale bar: {value} {unit} (original recognition)")
                     return value, unit
                 except:
                     continue
-    print("未找到比例尺信息")
+    print("No scale bar information found")
     return None, None
 
 def detect_particles_with_yolo(image, model_path='D:/python-learn/K/seg-MOGA/runs/segment/kan/weights/best.pt'):
-    """使用YOLO模型检测粒子"""
+    """Detect particles using YOLO model"""
     try:
         from ultralytics import YOLO
         model = YOLO(model_path)
         results = model(image, conf=0.3, iou=0.5)
-        return results[0]  # 返回第一张图片的结果
+        return results[0]  # Return results for first image
     except Exception as e:
-        print(f"YOLO检测失败: {e}")
+        print(f"YOLO detection failed: {e}")
         return None
 
 def calculate_particle_features_from_mask(mask, pixel_to_real_ratio=None, unit="μm"):
-    """从mask计算粒子特征"""
+    """Calculate particle features from mask"""
     from scipy import ndimage
     
-    # 连通区域分析
+    # Connected component analysis
     labeled_mask, num_features = ndimage.label(mask > 0)
     
     particle_features = []
     
     for i in range(1, num_features + 1):
-        # 提取单个连通区域
+        # Extract single connected component
         single_mask = (labeled_mask == i).astype(np.uint8)
         
-        # 计算面积（像素数）
+        # Calculate area (pixel count)
         area_pixels = np.sum(single_mask)
         
-        # 计算等效直径
+        # Calculate equivalent diameter
         diameter_pixels = np.sqrt(4 * area_pixels / np.pi)
         
-        # 转换为物理单位
+        # Convert to physical units
         if pixel_to_real_ratio:
             area_real = area_pixels * (pixel_to_real_ratio ** 2)
             diameter_real = diameter_pixels * pixel_to_real_ratio
@@ -191,11 +191,11 @@ def calculate_particle_features_from_mask(mask, pixel_to_real_ratio=None, unit="
             area_real = area_pixels
             diameter_real = diameter_pixels
         
-        # 计算周长
+        # Calculate perimeter
         contours, _ = cv2.findContours(single_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         perimeter = cv2.arcLength(contours[0], True) if contours else 0
         
-        # 计算圆度
+        # Calculate circularity
         circularity = (4 * np.pi * area_pixels) / (perimeter ** 2) if perimeter > 0 else 0
         
         particle_features.append({
@@ -211,17 +211,17 @@ def calculate_particle_features_from_mask(mask, pixel_to_real_ratio=None, unit="
     return particle_features, labeled_mask
 
 def calculate_particle_features(masks, pixel_to_real_ratio=None, unit="μm"):
-    """计算粒子特征"""
+    """Calculate particle features"""
     particle_features = []
     
     for i, mask in enumerate(masks):
-        # 计算面积（像素数）
+        # Calculate area (pixel count)
         area_pixels = np.sum(mask)
         
-        # 计算等效直径
+        # Calculate equivalent diameter
         diameter_pixels = np.sqrt(4 * area_pixels / np.pi)
         
-        # 转换为物理单位
+        # Convert to physical units
         if pixel_to_real_ratio:
             area_real = area_pixels * (pixel_to_real_ratio ** 2)
             diameter_real = diameter_pixels * pixel_to_real_ratio
@@ -229,11 +229,11 @@ def calculate_particle_features(masks, pixel_to_real_ratio=None, unit="μm"):
             area_real = area_pixels
             diameter_real = diameter_pixels
         
-        # 计算周长
+        # Calculate perimeter
         contours, _ = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         perimeter = cv2.arcLength(contours[0], True) if contours else 0
         
-        # 计算圆度
+        # Calculate circularity
         circularity = (4 * np.pi * area_pixels) / (perimeter ** 2) if perimeter > 0 else 0
         
         particle_features.append({
@@ -249,42 +249,42 @@ def calculate_particle_features(masks, pixel_to_real_ratio=None, unit="μm"):
     return particle_features
 
 def plot_particle_distributions(particle_features, pixel_to_real_ratio=None, unit="μm", save_path=None):
-    """绘制粒子分布图"""
+    """Plot particle distribution graphs"""
     if not particle_features:
-        print("没有检测到粒子，无法绘制分布图")
+        print("No particles detected, cannot plot distribution graphs")
         return
     
-    # 提取数据
+    # Extract data
     areas = [p['area_real'] for p in particle_features]
     diameters = [p['diameter_real'] for p in particle_features]
     circularities = [p['circularity'] for p in particle_features]
     
-    # 创建子图
+    # Create subplots
     fig, axes = plt.subplots(2, 2, figsize=(15, 12))
     fig.suptitle('Particle Distribution Analysis', fontsize=24, fontweight='bold')
     
-    # 1. 面积分布直方图
+    # 1. Area distribution histogram
     axes[0, 0].hist(areas, bins=20, alpha=0.7, color='skyblue', edgecolor='black')
     axes[0, 0].set_xlabel(f'Particle Area ({unit}$^2$)', fontsize=20)
     axes[0, 0].set_ylabel('Frequency', fontsize=20)
     axes[0, 0].set_title('Particle Area Distribution', fontsize=22)
     axes[0, 0].tick_params(axis='both', labelsize=18)
     
-    # 2. 直径分布直方图
+    # 2. Diameter distribution histogram
     axes[0, 1].hist(diameters, bins=20, alpha=0.7, color='lightgreen', edgecolor='black')
     axes[0, 1].set_xlabel(f'Particle Diameter ({unit})', fontsize=20)
     axes[0, 1].set_ylabel('Frequency', fontsize=20)
     axes[0, 1].set_title('Particle Diameter Distribution', fontsize=22)
     axes[0, 1].tick_params(axis='both', labelsize=18)
     
-    # 3. 圆度分布直方图
+    # 3. Circularity distribution histogram
     axes[1, 0].hist(circularities, bins=20, alpha=0.7, color='lightcoral', edgecolor='black')
     axes[1, 0].set_xlabel('Circularity', fontsize=20)
     axes[1, 0].set_ylabel('Frequency', fontsize=20)
     axes[1, 0].set_title('Particle Circularity Distribution', fontsize=22)
     axes[1, 0].tick_params(axis='both', labelsize=18)
     
-    # 4. 面积vs直径散点图
+    # 4. Area vs diameter scatter plot
     axes[1, 1].scatter(diameters, areas, alpha=0.6, color='purple')
     axes[1, 1].set_xlabel(f'Particle Diameter ({unit})', fontsize=20)
     axes[1, 1].set_ylabel(f'Particle Area ({unit}$^2$)', fontsize=20)
@@ -295,7 +295,7 @@ def plot_particle_distributions(particle_features, pixel_to_real_ratio=None, uni
     
     if save_path:
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
-        print(f"分布图已保存: {save_path}")
+        print(f"Distribution graph saved: {save_path}")
     plt.close()
 
 import os
@@ -303,39 +303,39 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SCALE_DETECTOR_PATH = os.path.join(BASE_DIR, 'scale_detector_kan.pth')
 
 def analyze_sem_image(image_path):
-    print(f"\n📸 分析SEM图像: {image_path}")
+    print(f"\n Analyzing SEM image: {image_path}")
     print("=" * 40)
     if not os.path.exists(image_path):
-        print(f"❌ 图像文件不存在: {image_path}")
+        print(f" Image file does not exist: {image_path}")
         return
     
-    # 读取图像
+    # Read image
     image = cv2.imread(image_path)
     if image is None:
-        print(f"❌ 无法读取图像: {image_path}")
+        print(f" Cannot read image: {image_path}")
         return
-    print(f"图像尺寸: {image.shape}")
+    print(f"Image dimensions: {image.shape}")
     
-    # 1. 使用改进的OCR引导检测器检测比例尺
+    # 1. Detect scale bar using improved OCR-guided detector
     coords, scale_length_pixels, confidence, scale_length_real, unit = detect_scale_with_improved_detector(image_path)
     
-    # 显示详细的坐标信息
+    # Display detailed coordinate information
     if coords is not None:
-        print(f"🔍 比例尺坐标信息:")
-        print(f"   检测置信度: {confidence:.3f}")
-        print(f"   比例尺起点坐标: ({coords[0]}, {coords[1]})")
-        print(f"   比例尺终点坐标: ({coords[2]}, {coords[3]})")
-        print(f"   比例尺像素长度: {scale_length_pixels:.1f} 像素")
+        print(f"   Scale bar coordinate information:")
+        print(f"   Detection confidence: {confidence:.3f}")
+        print(f"   Scale bar start coordinates: ({coords[0]}, {coords[1]})")
+        print(f"   Scale bar end coordinates: ({coords[2]}, {coords[3]})")
+        print(f"   Scale bar pixel length: {scale_length_pixels:.1f} pixels")
         
-        # 计算比例尺角度
+        # Calculate scale bar angle
         dx = coords[2] - coords[0]
         dy = coords[3] - coords[1]
         angle = np.arctan2(dy, dx) * 180 / np.pi
-        print(f"   比例尺角度: {angle:.1f}°")
+        print(f"   Scale bar angle: {angle:.1f}°")
     else:
-        print("❌ 未检测到比例尺")
-        # 如果改进检测器失败，尝试使用原有的检测器作为备选
-        print("🔄 尝试使用原有检测器作为备选...")
+        print(" No scale bar detected")
+        # If improved detector fails, try original detector as fallback
+        print(" Trying original detector as fallback...")
         scale_detector = ScaleDetectorWithPreprocessing(
             model_path=SCALE_DETECTOR_PATH,
             input_size=(320, 320),
@@ -344,16 +344,16 @@ def analyze_sem_image(image_path):
         coords, scale_length_pixels, confidence = scale_detector.detect_scale(image)
         scale_length_real, unit = extract_scale_length_from_ocr(image_path)
     
-    # 2. 自动换算
+    # 2. Automatic conversion
     if scale_length_pixels and scale_length_real:
         pixel_to_real_ratio = scale_length_real / scale_length_pixels
-        print(f"每像素物理长度: {pixel_to_real_ratio} {unit}")
+        print(f"Physical length per pixel: {pixel_to_real_ratio} {unit}")
     else:
         pixel_to_real_ratio = None
-        unit = "None"  # 没有检测到比例尺
-        print("每像素长度: 未知（仅以像素为单位）")
+        unit = "None"  # No scale bar detected
+        print("Length per pixel: Unknown (pixel units only)")
     
-    # 3. 初始化粒子分析器（用于备选方案）
+    # 3. Initialize particle analyzer (for fallback option)
     scale_detector = ScaleDetectorWithPreprocessing(
         model_path=SCALE_DETECTOR_PATH,
         input_size=(320, 320),
@@ -361,26 +361,26 @@ def analyze_sem_image(image_path):
     )
     analyzer = ParticleAnalyzer(scale_detector)
     
-    # 4. 使用UKAN模型检测粒子
-    print("\n🔍 使用UKAN模型检测粒子...")
+    # 4. Detect particles using UKAN model
+    print("\n Detecting particles using UKAN model...")
     try:
-        # 加载UKAN模型
+        # Load UKAN model
         ukan_model, ukan_config = load_ukan_model()
         
-        # UKAN推理
+        # UKAN inference
         prob_map, pred_mask = ukan_inference(image, ukan_model, ukan_config)
         
-        # 统计信息
+        # Statistical information
         total_pixels = pred_mask.size
         positive_pixels = np.sum(pred_mask > 0)
         positive_ratio = positive_pixels / total_pixels * 100
         
-        print(f"UKAN检测结果:")
-        print(f"   总像素数: {total_pixels}")
-        print(f"   正像素数: {positive_pixels}")
-        print(f"   正像素比例: {positive_ratio:.4f}%")
+        print(f"UKAN detection results:")
+        print(f"   Total pixels: {total_pixels}")
+        print(f"   Positive pixels: {positive_pixels}")
+        print(f"   Positive pixel ratio: {positive_ratio:.4f}%")
         
-        # 计算粒子特征
+        # Calculate particle features
         particle_features, labeled_mask = calculate_particle_features_from_mask(
             pred_mask,
             pixel_to_real_ratio,
@@ -388,93 +388,93 @@ def analyze_sem_image(image_path):
         )
         
         if particle_features:
-            print(f"   检测到粒子数: {len(particle_features)}")
+            print(f"   Number of particles detected: {len(particle_features)}")
             
-            # 6. 绘制分布图
+            # 6. Plot distribution graphs
             base_name = os.path.splitext(os.path.basename(image_path))[0]
             distribution_path = os.path.join(OUTPUT_DIR, f"particle_distribution_{base_name}.png")
             plot_particle_distributions(particle_features, pixel_to_real_ratio, unit, distribution_path)
             
-            # 7. 输出统计信息
+            # 7. Output statistical information
             areas = [p['area_real'] for p in particle_features]
             diameters = [p['diameter_real'] for p in particle_features]
             circularities = [p['circularity'] for p in particle_features]
             
-            print(f"\n📊 UKAN粒子检测结果:")
-            print(f"   检测到粒子数: {len(particle_features)}")
-            print(f"   平均面积: {np.mean(areas):.2f} {unit}²")
-            print(f"   平均直径: {np.mean(diameters):.2f} {unit}")
-            print(f"   平均圆度: {np.mean(circularities):.3f}")
-            print(f"   面积标准差: {np.std(areas):.2f} {unit}²")
-            print(f"   直径标准差: {np.std(diameters):.2f} {unit}")
+            print(f"\n UKAN particle detection results:")
+            print(f"   Number of particles detected: {len(particle_features)}")
+            print(f"   Average area: {np.mean(areas):.2f} {unit}²")
+            print(f"   Average diameter: {np.mean(diameters):.2f} {unit}")
+            print(f"   Average circularity: {np.mean(circularities):.3f}")
+            print(f"   Area standard deviation: {np.std(areas):.2f} {unit}²")
+            print(f"   Diameter standard deviation: {np.std(diameters):.2f} {unit}")
             
-            # 保存可视化结果
+            # Save visualization results
             save_visualization_results(image, prob_map, pred_mask, base_name, particle_features, labeled_mask)
             
-            # 保存分析报告
+            # Save analysis report
             save_analysis_report(image_path, particle_features, pixel_to_real_ratio, unit, "MU-KAN", {"scale_length_pixels": float(scale_length_pixels) if scale_length_pixels is not None else None, "scale_length_real": scale_length_real, "unit": unit, "coords": coords})
             
         else:
-            print("❌ UKAN未检测到粒子")
-            # 保存分析报告（即使没有检测到粒子）
+            print(" No particles detected by UKAN")
+            # Save analysis report (even if no particles detected)
             save_analysis_report(image_path, [], pixel_to_real_ratio, unit, "MU-KAN", {"scale_length_pixels": float(scale_length_pixels) if scale_length_pixels is not None else None, "scale_length_real": scale_length_real, "unit": unit, "coords": coords})
             
     except Exception as e:
-        print(f"❌ UKAN检测失败: {e}")
-        print("尝试使用YOLO检测...")
+        print(f" UKAN detection failed: {e}")
+        print("Trying YOLO detection...")
         
-        # 使用YOLO作为备选
+        # Use YOLO as fallback
         yolo_results = detect_particles_with_yolo(image)
         
         if yolo_results:
-            print(f"YOLO检测到 {len(yolo_results.masks)} 个粒子")
+            print(f"YOLO detected {len(yolo_results.masks)} particles")
             
-            # 计算粒子特征
+            # Calculate particle features
             particle_features = calculate_particle_features(
                 yolo_results.masks.data.cpu().numpy(),
                 pixel_to_real_ratio,
                 unit if unit else "μm"
             )
             
-            # 绘制分布图
+            # Plot distribution graphs
             base_name = os.path.splitext(os.path.basename(image_path))[0]
             distribution_path = os.path.join(OUTPUT_DIR, f"particle_distribution_{base_name}.png")
             plot_particle_distributions(particle_features, pixel_to_real_ratio, unit, distribution_path)
             
-            # 保存YOLO masks
+            # Save YOLO masks
             masks = yolo_results.masks.data.cpu().numpy()
             for i, mask in enumerate(masks):
                 mask_path = os.path.join(OUTPUT_DIR, f"{base_name}_yolo_mask_{i+1}.png")
                 mask_uint8 = (mask * 255).astype(np.uint8)
                 cv2.imwrite(mask_path, mask_uint8)
-                print(f"💾 YOLO mask {i+1} 已保存: {mask_path}")
+                print(f" YOLO mask {i+1} saved: {mask_path}")
             
-            # 保存合并的mask
+            # Save combined mask
             combined_mask = np.max(masks, axis=0).astype(np.uint8)
             combined_mask_path = os.path.join(OUTPUT_DIR, f"{base_name}_yolo_combined_mask.png")
             combined_mask_uint8 = (combined_mask * 255).astype(np.uint8)
             cv2.imwrite(combined_mask_path, combined_mask_uint8)
-            print(f"💾 YOLO合并mask已保存: {combined_mask_path}")
+            print(f" YOLO combined mask saved: {combined_mask_path}")
             
-            # 输出统计信息
+            # Output statistical information
             if particle_features:
                 areas = [p['area_real'] for p in particle_features]
                 diameters = [p['diameter_real'] for p in particle_features]
                 circularities = [p['circularity'] for p in particle_features]
                 
-                print(f"\n📊 YOLO粒子检测结果:")
-                print(f"   检测到粒子数: {len(particle_features)}")
-                print(f"   平均面积: {np.mean(areas):.2f} {unit}²")
-                print(f"   平均直径: {np.mean(diameters):.2f} {unit}")
-                print(f"   平均圆度: {np.mean(circularities):.3f}")
-                print(f"   面积标准差: {np.std(areas):.2f} {unit}²")
-                print(f"   直径标准差: {np.std(diameters):.2f} {unit}")
+                print(f"\n YOLO particle detection results:")
+                print(f"   Number of particles detected: {len(particle_features)}")
+                print(f"   Average area: {np.mean(areas):.2f} {unit}²")
+                print(f"   Average diameter: {np.mean(diameters):.2f} {unit}")
+                print(f"   Average circularity: {np.mean(circularities):.3f}")
+                print(f"   Area standard deviation: {np.std(areas):.2f} {unit}²")
+                print(f"   Diameter standard deviation: {np.std(diameters):.2f} {unit}")
                 
-                # 保存分析报告
+                # Save analysis report
                 save_analysis_report(image_path, particle_features, pixel_to_real_ratio, unit, "YOLO", {"scale_length_pixels": float(scale_length_pixels) if scale_length_pixels is not None else None, "scale_length_real": scale_length_real, "unit": unit, "coords": coords})
         else:
-            print("❌ YOLO也未检测到粒子，使用传统方法...")
-            # 使用原有的分析方法作为备选
+            print(" No particles detected by YOLO either, using traditional method...")
+            # Use original analysis method as fallback
             results = analyzer.analyze_image_with_scale(
                 image,
                 scale_length_real=scale_length_real,
@@ -482,58 +482,58 @@ def analyze_sem_image(image_path):
                 particle_method="watershed",
                 save_path=os.path.join(OUTPUT_DIR, f"sem_analysis_{os.path.basename(image_path)}.jpg")
             )
-            # 输出分析结果
+            # Output analysis results
             if results:
-                print(f"\n📊 传统方法分析结果:")
-                print(f"   比例尺长度: {results['scale_info']['length_pixels']:.1f}像素")
-                print(f"   检测到粒子数: {results['analysis']['count']}")
-                print(f"   平均直径: {results['analysis']['diameter_stats']['mean']:.2f}{results['scale_info']['unit']}")
-                print(f"   平均面积: {results['analysis']['area_stats']['mean']:.2f}{results['scale_info']['unit']}²")
-                print(f"   平均圆度: {results['analysis']['circularity_stats']['mean']:.3f}")
+                print(f"\n Traditional method analysis results:")
+                print(f"   Scale bar length: {results['scale_info']['length_pixels']:.1f} pixels")
+                print(f"   Number of particles detected: {results['analysis']['count']}")
+                print(f"   Average diameter: {results['analysis']['diameter_stats']['mean']:.2f}{results['scale_info']['unit']}")
+                print(f"   Average area: {results['analysis']['area_stats']['mean']:.2f}{results['scale_info']['unit']}²")
+                print(f"   Average circularity: {results['analysis']['circularity_stats']['mean']:.3f}")
                 
-                # 保存分析报告
-                save_analysis_report(image_path, [], pixel_to_real_ratio, unit, "传统方法", {"scale_length_pixels": scale_length_pixels, "scale_length_real": scale_length_real, "unit": unit, "coords": coords})
+                # Save analysis report
+                save_analysis_report(image_path, [], pixel_to_real_ratio, unit, "Traditional Method", {"scale_length_pixels": scale_length_pixels, "scale_length_real": scale_length_real, "unit": unit, "coords": coords})
     
-    print("\n✅ 分析完成！")
+    print("\n Analysis completed!")
 
-# 在analyze_sem_image_ukan_only和analyze_sem_image_yolo_only中，构造scale_info并返回
+# In analyze_sem_image_ukan_only and analyze_sem_image_yolo_only, construct scale_info and return it
 
 def analyze_sem_image_ukan_only(image_path):
-    """仅使用UKAN模型进行分析"""
-    print(f"\n📸 使用UKAN模型分析SEM图像: {image_path}")
+    """Analyze SEM image using UKAN model only"""
+    print(f"\n Analyzing SEM image with UKAN model: {image_path}")
     print("=" * 40)
     if not os.path.exists(image_path):
-        print(f"❌ 图像文件不存在: {image_path}")
+        print(f" Image file does not exist: {image_path}")
         return
     scale_info = {}
     
-    # 读取图像
+    # Read image
     image = cv2.imread(image_path)
     if image is None:
-        print(f"❌ 无法读取图像: {image_path}")
+        print(f" Cannot read image: {image_path}")
         return
-    print(f"图像尺寸: {image.shape}")
+    print(f"Image dimensions: {image.shape}")
     
-    # 1. 使用改进的OCR引导检测器检测比例尺
+    # 1. Detect scale bar using improved OCR-guided detector
     coords, scale_length_pixels, confidence, scale_length_real, unit = detect_scale_with_improved_detector(image_path)
     
-    # 显示详细的坐标信息
+    # Display detailed coordinate information
     if coords is not None:
-        print(f"🔍 比例尺坐标信息:")
-        print(f"   检测置信度: {confidence:.3f}")
-        print(f"   比例尺起点坐标: ({coords[0]}, {coords[1]})")
-        print(f"   比例尺终点坐标: ({coords[2]}, {coords[3]})")
-        print(f"   比例尺像素长度: {scale_length_pixels:.1f} 像素")
+        print(f" Scale bar coordinate information:")
+        print(f"   Detection confidence: {confidence:.3f}")
+        print(f"   Scale bar start coordinates: ({coords[0]}, {coords[1]})")
+        print(f"   Scale bar end coordinates: ({coords[2]}, {coords[3]})")
+        print(f"   Scale bar pixel length: {scale_length_pixels:.1f} pixels")
         
-        # 计算比例尺角度
+        # Calculate scale bar angle
         dx = coords[2] - coords[0]
         dy = coords[3] - coords[1]
         angle = np.arctan2(dy, dx) * 180 / np.pi
-        print(f"   比例尺角度: {angle:.1f}°")
+        print(f"   Scale bar angle: {angle:.1f}°")
     else:
-        print("❌ 未检测到比例尺")
-        # 如果改进检测器失败，尝试使用原有的检测器作为备选
-        print("🔄 尝试使用原有检测器作为备选...")
+        print(" No scale bar detected")
+        # If improved detector fails, try original detector as fallback
+        print(" Trying original detector as fallback...")
         scale_detector = ScaleDetectorWithPreprocessing(
             model_path=SCALE_DETECTOR_PATH,
             input_size=(320, 320),
@@ -542,12 +542,12 @@ def analyze_sem_image_ukan_only(image_path):
         coords, scale_length_pixels, confidence = scale_detector.detect_scale(image)
         scale_length_real, unit = extract_scale_length_from_ocr(image_path)
     
-    print(f"OCR原始识别结果: {scale_length_real} {unit}")
+    print(f"Raw OCR recognition result: {scale_length_real} {unit}")
     
-    # 2. 自动换算
+    # 2. Automatic conversion
     if scale_length_pixels and scale_length_real:
         pixel_to_real_ratio = scale_length_real / scale_length_pixels
-        print(f"每像素物理长度: {pixel_to_real_ratio} {unit}")
+        print(f"Physical length per pixel: {pixel_to_real_ratio} {unit}")
         scale_info = {
             "scale_length_pixels": float(scale_length_pixels) if scale_length_pixels is not None else None,
             "scale_length_real": scale_length_real,
@@ -557,91 +557,91 @@ def analyze_sem_image_ukan_only(image_path):
         }
     else:
         pixel_to_real_ratio = None
-        unit = "None"  # 没有检测到比例尺
-        print("每像素长度: 未知（仅以像素为单位）")
+        unit = "None"  # No scale bar detected
+        print("Length per pixel: Unknown (pixel units only)")
         scale_info = {}
-    # 5. 使用UKAN模型检测粒子
-    print("\n🔍 使用UKAN模型检测粒子...")
+    # 5. Detect particles using UKAN model
+    print("\n Detecting particles using UKAN model...")
     try:
         ukan_model, ukan_config = load_ukan_model()
         prob_map, pred_mask = ukan_inference(image, ukan_model, ukan_config)
         total_pixels = pred_mask.size
         positive_pixels = np.sum(pred_mask > 0)
         positive_ratio = positive_pixels / total_pixels * 100
-        print(f"UKAN检测结果:")
-        print(f"   总像素数: {total_pixels}")
-        print(f"   正像素数: {positive_pixels}")
-        print(f"   正像素比例: {positive_ratio:.4f}%")
+        print(f"UKAN detection results:")
+        print(f"   Total pixels: {total_pixels}")
+        print(f"   Positive pixels: {positive_pixels}")
+        print(f"   Positive pixel ratio: {positive_ratio:.4f}%")
         particle_features, labeled_mask = calculate_particle_features_from_mask(
             pred_mask,
             pixel_to_real_ratio,
             unit if unit else "μm"
         )
         if particle_features:
-            print(f"   检测到粒子数: {len(particle_features)}")
+            print(f"   Number of particles detected: {len(particle_features)}")
             base_name = os.path.splitext(os.path.basename(image_path))[0]
             distribution_path = os.path.join(OUTPUT_DIR, f"particle_distribution_{base_name}.png")
             plot_particle_distributions(particle_features, pixel_to_real_ratio, unit, distribution_path)
             areas = [p['area_real'] for p in particle_features]
             diameters = [p['diameter_real'] for p in particle_features]
             circularities = [p['circularity'] for p in particle_features]
-            print(f"\n📊 UKAN粒子检测结果:")
-            print(f"   检测到粒子数: {len(particle_features)}")
-            print(f"   平均面积: {np.mean(areas):.2f} {unit}²")
-            print(f"   平均直径: {np.mean(diameters):.2f} {unit}")
-            print(f"   平均圆度: {np.mean(circularities):.3f}")
-            print(f"   面积标准差: {np.std(areas):.2f} {unit}²")
-            print(f"   直径标准差: {np.std(diameters):.2f} {unit}")
+            print(f"\n UKAN particle detection results:")
+            print(f"   Number of particles detected: {len(particle_features)}")
+            print(f"   Average area: {np.mean(areas):.2f} {unit}²")
+            print(f"   Average diameter: {np.mean(diameters):.2f} {unit}")
+            print(f"   Average circularity: {np.mean(circularities):.3f}")
+            print(f"   Area standard deviation: {np.std(areas):.2f} {unit}²")
+            print(f"   Diameter standard deviation: {np.std(diameters):.2f} {unit}")
             save_visualization_results(image, prob_map, pred_mask, base_name, particle_features, labeled_mask)
             save_analysis_report(image_path, particle_features, pixel_to_real_ratio, unit, "MU-KAN Segmentation and YOLOv11 Detection", scale_info)
         else:
-            print("❌ UKAN未检测到粒子")
+            print(" No particles detected by UKAN")
             save_analysis_report(image_path, [], pixel_to_real_ratio, unit, "MU-KAN", scale_info)
-        print("\n✅ 分析完成！")
-        print(f"分析结果目录: {OUTPUT_DIR}")
+        print("\n Analysis completed!")
+        print(f"Analysis results directory: {OUTPUT_DIR}")
         return OUTPUT_DIR, {"scale_info": scale_info}
     except Exception as e:
-        print(f"❌ UKAN检测失败: {e}")
-        print("UKAN检测失败，请检查模型文件或尝试其他方法")
-        print("\n✅ 分析完成！")
-        print(f"分析结果目录: {OUTPUT_DIR}")
+        print(f" UKAN detection failed: {e}")
+        print("UKAN detection failed, please check model files or try other methods")
+        print("\n Analysis completed!")
+        print(f"Analysis results directory: {OUTPUT_DIR}")
         return OUTPUT_DIR, {"scale_info": scale_info}
 
 def analyze_sem_image_yolo_only(image_path):
-    """仅使用YOLO模型进行分析"""
-    print(f"\n📸 使用YOLO模型分析SEM图像: {image_path}")
+    """Analyze SEM image using YOLO model only"""
+    print(f"\n Analyzing SEM image with YOLO model: {image_path}")
     print("=" * 40)
     if not os.path.exists(image_path):
-        print(f"❌ 图像文件不存在: {image_path}")
+        print(f" Image file does not exist: {image_path}")
         return
     
-    # 读取图像
+    # Read image
     image = cv2.imread(image_path)
     if image is None:
-        print(f"❌ 无法读取图像: {image_path}")
+        print(f" Cannot read image: {image_path}")
         return
-    print(f"图像尺寸: {image.shape}")
+    print(f"Image dimensions: {image.shape}")
     
-    # 1. 使用改进的OCR引导检测器检测比例尺
+    # 1. Detect scale bar using improved OCR-guided detector
     coords, scale_length_pixels, confidence, scale_length_real, unit = detect_scale_with_improved_detector(image_path)
     
-    # 显示详细的坐标信息
+    # Display detailed coordinate information
     if coords is not None:
-        print(f"🔍 比例尺坐标信息:")
-        print(f"   检测置信度: {confidence:.3f}")
-        print(f"   比例尺起点坐标: ({coords[0]}, {coords[1]})")
-        print(f"   比例尺终点坐标: ({coords[2]}, {coords[3]})")
-        print(f"   比例尺像素长度: {scale_length_pixels:.1f} 像素")
+        print(f" Scale bar coordinate information:")
+        print(f"   Detection confidence: {confidence:.3f}")
+        print(f"   Scale bar start coordinates: ({coords[0]}, {coords[1]})")
+        print(f"   Scale bar end coordinates: ({coords[2]}, {coords[3]})")
+        print(f"   Scale bar pixel length: {scale_length_pixels:.1f} pixels")
         
-        # 计算比例尺角度
+        # Calculate scale bar angle
         dx = coords[2] - coords[0]
         dy = coords[3] - coords[1]
         angle = np.arctan2(dy, dx) * 180 / np.pi
-        print(f"   比例尺角度: {angle:.1f}°")
+        print(f"   Scale bar angle: {angle:.1f}°")
     else:
-        print("❌ 未检测到比例尺")
-        # 如果改进检测器失败，尝试使用原有的检测器作为备选
-        print("🔄 尝试使用原有检测器作为备选...")
+        print(" No scale bar detected")
+        # If improved detector fails, try original detector as fallback
+        print(" Trying original detector as fallback...")
         scale_detector = ScaleDetectorWithPreprocessing(
             model_path=SCALE_DETECTOR_PATH,
             input_size=(320, 320),
@@ -650,74 +650,74 @@ def analyze_sem_image_yolo_only(image_path):
         coords, scale_length_pixels, confidence = scale_detector.detect_scale(image)
         scale_length_real, unit = extract_scale_length_from_ocr(image_path)
     
-    print(f"OCR原始识别结果: {scale_length_real} {unit}")
+    print(f"Raw OCR recognition result: {scale_length_real} {unit}")
     
-    # 2. 自动换算
+    # 2. Automatic conversion
     if scale_length_pixels and scale_length_real:
         pixel_to_real_ratio = scale_length_real / scale_length_pixels
-        print(f"每像素物理长度: {pixel_to_real_ratio} {unit}")
+        print(f"Physical length per pixel: {pixel_to_real_ratio} {unit}")
     else:
         pixel_to_real_ratio = None
-        unit = "None"  # 没有检测到比例尺
-        print("每像素长度: 未知（仅以像素为单位）")
+        unit = "None"  # No scale bar detected
+        print("Length per pixel: Unknown (pixel units only)")
     
-    # 5. 使用YOLO检测粒子
-    print("\n🔍 使用YOLO检测粒子...")
+    # 5. Detect particles using YOLO
+    print("\n Detecting particles using YOLO...")
     yolo_results = detect_particles_with_yolo(image)
     
     if yolo_results:
-        print(f"YOLO检测到 {len(yolo_results.masks)} 个粒子")
+        print(f"YOLO detected {len(yolo_results.masks)} particles")
         
-        # 计算粒子特征
+        # Calculate particle features
         particle_features = calculate_particle_features(
             yolo_results.masks.data.cpu().numpy(),
             pixel_to_real_ratio,
             unit if unit else "μm"
         )
         
-        # 绘制分布图
+        # Plot distribution graphs
         base_name = os.path.splitext(os.path.basename(image_path))[0]
         distribution_path = os.path.join(OUTPUT_DIR, f"particle_distribution_{base_name}.png")
         plot_particle_distributions(particle_features, pixel_to_real_ratio, unit, distribution_path)
         
-        # 保存YOLO masks
+        # Save YOLO masks
         masks = yolo_results.masks.data.cpu().numpy()
         for i, mask in enumerate(masks):
             mask_path = os.path.join(OUTPUT_DIR, f"{base_name}_yolo_mask_{i+1}.png")
             mask_uint8 = (mask * 255).astype(np.uint8)
             cv2.imwrite(mask_path, mask_uint8)
-            print(f"💾 YOLO mask {i+1} 已保存: {mask_path}")
+            print(f" YOLO mask {i+1} saved: {mask_path}")
         
-        # 保存合并的mask
+        # Save combined mask
         combined_mask = np.max(masks, axis=0).astype(np.uint8)
         combined_mask_path = os.path.join(OUTPUT_DIR, f"{base_name}_yolo_combined_mask.png")
         combined_mask_uint8 = (combined_mask * 255).astype(np.uint8)
         cv2.imwrite(combined_mask_path, combined_mask_uint8)
-        print(f"💾 YOLO合并mask已保存: {combined_mask_path}")
+        print(f" YOLO combined mask saved: {combined_mask_path}")
         
-        # 输出统计信息
+        # Output statistical information
         if particle_features:
             areas = [p['area_real'] for p in particle_features]
             diameters = [p['diameter_real'] for p in particle_features]
             circularities = [p['circularity'] for p in particle_features]
             
-            print(f"\n📊 YOLO粒子检测结果:")
-            print(f"   检测到粒子数: {len(particle_features)}")
-            print(f"   平均面积: {np.mean(areas):.2f} {unit}²")
-            print(f"   平均直径: {np.mean(diameters):.2f} {unit}")
-            print(f"   平均圆度: {np.mean(circularities):.3f}")
-            print(f"   面积标准差: {np.std(areas):.2f} {unit}²")
-            print(f"   直径标准差: {np.std(diameters):.2f} {unit}")
+            print(f"\n YOLO particle detection results:")
+            print(f"   Number of particles detected: {len(particle_features)}")
+            print(f"   Average area: {np.mean(areas):.2f} {unit}²")
+            print(f"   Average diameter: {np.mean(diameters):.2f} {unit}")
+            print(f"   Average circularity: {np.mean(circularities):.3f}")
+            print(f"   Area standard deviation: {np.std(areas):.2f} {unit}²")
+            print(f"   Diameter standard deviation: {np.std(diameters):.2f} {unit}")
             
-            # 保存分析报告
+            # Save analysis report
             save_analysis_report(image_path, particle_features, pixel_to_real_ratio, unit, "YOLO", {"scale_length_pixels": float(scale_length_pixels) if scale_length_pixels is not None else None, "scale_length_real": scale_length_real, "unit": unit, "coords": coords})
         else:
-            print("❌ YOLO未检测到粒子")
-            # 保存分析报告（即使没有检测到粒子）
+            print(" No particles detected by YOLO")
+            # Save analysis report (even if no particles detected)
             save_analysis_report(image_path, [], pixel_to_real_ratio, unit, "YOLO", {"scale_length_pixels": float(scale_length_pixels) if scale_length_pixels is not None else None, "scale_length_real": scale_length_real, "unit": unit, "coords": coords})
     else:
-        print("❌ YOLO检测失败，使用传统方法...")
-        # 使用原有的分析方法作为备选
+        print(" YOLO detection failed, using traditional method...")
+        # Use original analysis method as fallback
         results = analyzer.analyze_image_with_scale(
             image,
             scale_length_real=scale_length_real,
@@ -725,63 +725,63 @@ def analyze_sem_image_yolo_only(image_path):
             particle_method="watershed",
             save_path=os.path.join(OUTPUT_DIR, f"sem_analysis_{os.path.basename(image_path)}.jpg")
         )
-        # 输出分析结果
+        # Output analysis results
         if results:
-            print(f"\n📊 传统方法分析结果:")
-            print(f"   比例尺长度: {results['scale_info']['length_pixels']:.1f}像素")
-            print(f"   检测到粒子数: {results['analysis']['count']}")
-            print(f"   平均直径: {results['analysis']['diameter_stats']['mean']:.2f}{results['scale_info']['unit']}")
-            print(f"   平均面积: {results['analysis']['area_stats']['mean']:.2f}{results['scale_info']['unit']}²")
-            print(f"   平均圆度: {results['analysis']['circularity_stats']['mean']:.3f}")
+            print(f"\n Traditional method analysis results:")
+            print(f"   Scale bar length: {results['scale_info']['length_pixels']:.1f} pixels")
+            print(f"   Number of particles detected: {results['analysis']['count']}")
+            print(f"   Average diameter: {results['analysis']['diameter_stats']['mean']:.2f}{results['scale_info']['unit']}")
+            print(f"   Average area: {results['analysis']['area_stats']['mean']:.2f}{results['scale_info']['unit']}²")
+            print(f"   Average circularity: {results['analysis']['circularity_stats']['mean']:.3f}")
                 
-            # 保存分析报告
-            save_analysis_report(image_path, [], pixel_to_real_ratio, unit, "传统方法", {"scale_length_pixels": float(scale_length_pixels) if scale_length_pixels is not None else None, "scale_length_real": scale_length_real, "unit": unit, "coords": coords})
+            # Save analysis report
+            save_analysis_report(image_path, [], pixel_to_real_ratio, unit, "Traditional Method", {"scale_length_pixels": float(scale_length_pixels) if scale_length_pixels is not None else None, "scale_length_real": scale_length_real, "unit": unit, "coords": coords})
     
-    print("\n✅ 分析完成！")
-    print(f"分析结果目录: {OUTPUT_DIR}")
+    print("\n Analysis completed!")
+    print(f"Analysis results directory: {OUTPUT_DIR}")
     return OUTPUT_DIR
 
 def detect_scale_with_improved_detector(image_path, access_token=ACCESS_TOKEN):
     """
-    使用改进的OCR引导检测器检测比例尺
-    返回: (coords, scale_length_pixels, confidence, scale_length_real, unit)
+    Detect scale bar using improved OCR-guided detector
+    Returns: (coords, scale_length_pixels, confidence, scale_length_real, unit)
     """
-    print(f"🔍 使用改进的OCR引导检测器检测比例尺...")
+    print(f" Detecting scale bar using improved OCR-guided detector...")
     
-    # 初始化改进的检测器
-    model_path = "../epoch80.pt"  # 权重文件在根目录下，从backend目录运行时需要回到上级目录
+    # Initialize improved detector
+    model_path = "../epoch80.pt"  # Weight file in root directory, need to go up one level when running from backend directory
     try:
         detector = ImprovedOCRGuidedDetector(model_path, access_token)
     except Exception as e:
-        print(f"❌ 改进检测器初始化失败: {e}")
+        print(f" Failed to initialize improved detector: {e}")
         return None, None, None, None, None
     
-    # 进行混合检测
+    # Perform hybrid detection
     try:
         detection_result = detector.detect_scale_hybrid(image_path, conf=0.2)
         
         if not detection_result['final_results']:
-            print("❌ 改进检测器未检测到比例尺")
+            print(" No scale bar detected by improved detector")
             return None, None, None, None, None
         
-        # 获取最佳检测结果
+        # Get best detection result
         best_result = detection_result['final_results'][0]
         bbox = best_result['bbox']
         
-        # 计算比例尺坐标和长度
+        # Calculate scale bar coordinates and length
         x1, y1, x2, y2 = bbox
         coords = [int(x1), int(y1), int(x2), int(y2)]
         scale_length_pixels = float(np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2))
         confidence = float(best_result.get('confidence', 0.5))
         
-        # 从OCR结果中提取物理长度和单位
+        # Extract physical length and unit from OCR results
         scale_length_real = None
         unit = None
         
-        # 尝试从文本区域中提取比例尺信息
+        # Try to extract scale bar information from text regions
         for region in detection_result['text_regions']:
             text = region['text']
-            # 使用正则表达式提取数字和单位
+            # Extract numbers and units using regular expression
             import re
             pattern = r'(\d+(?:\.\d+)?)\s*(nm|μm|um|mm|cm|m)'
             match = re.search(pattern, text, re.IGNORECASE)
@@ -790,17 +790,17 @@ def detect_scale_with_improved_detector(image_path, access_token=ACCESS_TOKEN):
                 unit = match.group(2)
                 break
         
-        # 如果OCR没有提取到，尝试使用原有的OCR函数
+        # If not extracted by OCR, try original OCR function
         if scale_length_real is None:
             scale_length_real, unit = extract_scale_length_from_ocr(image_path)
         
-        print(f"✅ 改进检测器检测成功:")
-        print(f"   比例尺坐标: ({coords[0]}, {coords[1]}) -> ({coords[2]}, {coords[3]})")
-        print(f"   像素长度: {scale_length_pixels:.1f}")
-        print(f"   置信度: {confidence:.3f}")
-        print(f"   物理长度: {scale_length_real} {unit}")
+        print(f"  Improved detector detection successful:")
+        print(f"   Scale bar coordinates: ({coords[0]}, {coords[1]}) -> ({coords[2]}, {coords[3]})")
+        print(f"   Pixel length: {scale_length_pixels:.1f}")
+        print(f"   Confidence: {confidence:.3f}")
+        print(f"   Physical length: {scale_length_real} {unit}")
         
-        # 保存可视化结果
+        # Save visualization results
         base_name = os.path.splitext(os.path.basename(image_path))[0]
         vis_path = os.path.join(OUTPUT_DIR, f"{base_name}_improved_detection.png")
         detector.visualize_results(detection_result, vis_path)
@@ -808,63 +808,63 @@ def detect_scale_with_improved_detector(image_path, access_token=ACCESS_TOKEN):
         return coords, scale_length_pixels, confidence, scale_length_real, unit
         
     except Exception as e:
-        print(f"❌ 改进检测器检测失败: {e}")
+        print(f" Improved detector detection failed: {e}")
         return None, None, None, None, None
 
 def save_visualization_results(image, prob_map, pred_mask, base_name, particle_features=None, labeled_mask=None):
-    """保存可视化结果，并在原图上标注粒子编号和分割边界"""
-    # 使用全局输出目录
+    """Save visualization results and annotate particle numbers and segmentation boundaries on original image"""
+    # Use global output directory
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     
-    # 保存二值mask
+    # Save binary mask
     mask_path = os.path.join(OUTPUT_DIR, f"{base_name}_binary_mask.png")
     mask_uint8 = (pred_mask * 255).astype(np.uint8)
     cv2.imwrite(mask_path, mask_uint8)
-    print(f"💾 二值mask已保存: {mask_path}")
+    print(f" Binary mask saved: {mask_path}")
     
-    # 保存概率图
+    # Save probability map
     prob_path = os.path.join(OUTPUT_DIR, f"{base_name}_probability_map.png")
     prob_uint8 = (prob_map * 255).astype(np.uint8)
     cv2.imwrite(prob_path, prob_uint8)
-    print(f"💾 概率图已保存: {prob_path}")
+    print(f" Probability map saved: {prob_path}")
     
-    # 创建可视化
+    # Create visualization
     fig, axes = plt.subplots(2, 2, figsize=(15, 12))
     fig.suptitle(f'MU-KAN Model Analysis Results - {base_name}', fontsize=16, fontweight='bold')
     
-    # 1. 原始图像
+    # 1. Original image
     original_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     axes[0, 0].imshow(original_rgb)
     axes[0, 0].set_title('Original Image')
     axes[0, 0].axis('off')
     
-    # 2. 概率图
+    # 2. Probability map
     axes[0, 1].imshow(prob_map, cmap='hot')
     axes[0, 1].set_title('Probability Map')
     axes[0, 1].axis('off')
     
-    # 3. 二值化mask
+    # 3. Binarized mask
     axes[1, 0].imshow(pred_mask, cmap='gray')
     axes[1, 0].set_title('Binary Mask (Threshold 0.5)')
     axes[1, 0].axis('off')
     
-    # 4. 叠加显示
+    # 4. Overlay display
     overlay = original_rgb.copy()
     mask_resized = cv2.resize(pred_mask, (original_rgb.shape[1], original_rgb.shape[0]))
-    overlay[mask_resized > 0] = [0, 255, 0]  # 绿色显示检测区域
+    overlay[mask_resized > 0] = [0, 255, 0]  # Green for detection area
     axes[1, 1].imshow(overlay)
     axes[1, 1].set_title('Overlay Display (Green=Detection Area)')
     axes[1, 1].axis('off')
     
     plt.tight_layout()
     
-    # 保存结果
+    # Save results
     save_path = os.path.join(OUTPUT_DIR, f"{base_name}_visualization.png")
     plt.savefig(save_path, dpi=300, bbox_inches='tight')
-    print(f"💾 可视化结果已保存: {save_path}")
+    print(f" Visualization results saved: {save_path}")
     plt.close()
 
-    # 保存带编号的原图
+    # Save original image with numbered particles
     if particle_features is not None and labeled_mask is not None and len(particle_features) > 0:
         numbered_img = image.copy()
         for idx, feat in enumerate(particle_features, 1):
@@ -876,14 +876,14 @@ def save_visualization_results(image, prob_map, pred_mask, base_name, particle_f
                 cv2.putText(numbered_img, str(idx), (cx, cy), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0,0,255), 2, cv2.LINE_AA)
         numbered_path = os.path.join(OUTPUT_DIR, f"{base_name}_numbered.png")
         cv2.imwrite(numbered_path, numbered_img)
-        print(f"💾 带编号原图已保存: {numbered_path}")
-    # 保存原图+分割边界叠加图
+        print(f" Numbered original image saved: {numbered_path}")
+    # Save original image with segmentation boundaries overlay
     contour_img = image.copy()
     contours, _ = cv2.findContours((pred_mask > 0).astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    cv2.drawContours(contour_img, contours, -1, (0, 0, 255), 2)  # 红色线条
+    cv2.drawContours(contour_img, contours, -1, (0, 0, 255), 2)  # Red lines
     contour_path = os.path.join(OUTPUT_DIR, f"{base_name}_contour.png")
     cv2.imwrite(contour_path, contour_img)
-    print(f"💾 分割边界叠加图已保存: {contour_path}")
+    print(f" Segmentation boundary overlay image saved: {contour_path}")
 
 def save_analysis_report(image_path, particle_features, pixel_to_real_ratio, unit, method="MU-KAN", scale_info=None):
     report_path = os.path.join(OUTPUT_DIR, f"analysis_report_{os.path.splitext(os.path.basename(image_path))[0]}.txt")
@@ -896,7 +896,7 @@ def save_analysis_report(image_path, particle_features, pixel_to_real_ratio, uni
         if scale_info:
             f.write(f"Scale Length (pixels): {scale_info.get('scale_length_pixels', 'Not detected')}\n")
             f.write(f"OCR Detected Physical Length: {scale_info.get('scale_length_real', 'Not detected')} {scale_info.get('unit', '')}\n")
-            # 添加坐标信息到报告
+            # Add coordinate information to report
             if 'coords' in scale_info:
                 coords = scale_info['coords']
                 f.write(f"Scale Start Coordinates: ({coords[0]}, {coords[1]})\n")
@@ -925,30 +925,30 @@ def save_analysis_report(image_path, particle_features, pixel_to_real_ratio, uni
                 f.write(f"    Circularity: {particle['circularity']:.3f}\n")
         else:
             f.write("No particles detected\n")
-    print(f"📄 Analysis report saved: {report_path}")
+    print(f" Analysis report saved: {report_path}")
 
 if __name__ == "__main__":
-    print("🎯 全自动KAN比例尺+粒子检测+分布图分析 (批量模式)")
+    print(" Fully Automatic KAN Scale Bar + Particle Detection + Distribution Analysis (Batch Mode)")
     print("=" * 50)
     
-    # 选择检测方法
-    print("请选择粒子检测方法：")
-    print("1 = UKAN语义分割 (推荐，效果更好)")
-    print("2 = YOLO目标检测 (备选方案)")
-    print("3 = 自动选择 (优先UKAN，失败时使用YOLO)")
+    # Select detection method
+    print("Please select particle detection method:")
+    print("1 = UKAN Semantic Segmentation (Recommended, better performance)")
+    print("2 = YOLO Object Detection (Fallback option)")
+    print("3 = Auto Select (UKAN first, YOLO if failed)")
     
-    mode = input("请输入选择 (1/2/3): ").strip()
+    mode = input("Please enter your selection (1/2/3): ").strip()
     
-    # 支持批量处理文件夹下所有图片
-    folder = input("请输入SEM图像文件夹路径（如 datasets/lizi/images 或单张图片路径）: ").strip()
+    # Support batch processing of all images in folder
+    folder = input("Please enter SEM image folder path (e.g., datasets/lizi/images or single image path): ").strip()
     
-    # 去除可能的引号
+    # Remove possible quotation marks
     folder = folder.strip('"\'')
     
     if os.path.isdir(folder):
-        # 处理所有png/jpg图片
+        # Process all png/jpg images
         image_list = sorted(glob.glob(folder + "/*.png") + glob.glob(folder + "/*.jpg"))
-        print(f"共检测到 {len(image_list)} 张图片，将依次分析...")
+        print(f"Total {len(image_list)} images detected, will analyze sequentially...")
         for image_path in image_list:
             if mode == "1":
                 analyze_sem_image_ukan_only(image_path)
@@ -957,11 +957,11 @@ if __name__ == "__main__":
             elif mode == "3":
                 analyze_sem_image(image_path)
             else:
-                print("无效选择，使用自动模式")
+                print("Invalid selection, using auto mode")
                 analyze_sem_image(image_path)
-            time.sleep(0.7)  # 防止百度OCR QPS超限
+            time.sleep(0.7)  # Prevent Baidu OCR QPS limit exceeded
     else:
-        # 单张图片
+        # Single image
         if mode == "1":
             analyze_sem_image_ukan_only(folder)
         elif mode == "2":
@@ -969,6 +969,5 @@ if __name__ == "__main__":
         elif mode == "3":
             analyze_sem_image(folder)
         else:
-            print("无效选择，使用自动模式")
-            analyze_sem_image(folder) 
-    
+            print("Invalid selection, using auto mode")
+            analyze_sem_image(folder)
