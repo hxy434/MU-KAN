@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-基于OCR引导的比例尺检测器
-先识别比例尺的数字和单位，然后以该区域为中心扩展搜索比例尺
+OCR-Guided Scale Bar Detector
+First recognize scale bar numbers and units, then expand search for scale bar centered on this region
 """
 
 import os
@@ -19,42 +19,42 @@ import mock_ocr
 class OCRGuidedScaleDetector:
     def __init__(self, model_path, access_token=None):
         """
-        初始化OCR引导的比例尺检测器
+        Initialize OCR-guided scale bar detector
         
         Args:
-            model_path: YOLO模型路径
-            access_token: 百度OCR access_token
+            model_path: Path to YOLO model
+            access_token: Baidu OCR access_token
         """
         self.model = YOLO(model_path)
         self.access_token = access_token
         
-        # 比例尺单位模式
+        # Scale bar unit patterns
         self.scale_units = ['um', 'μm', 'nm', 'mm', 'cm', 'm', 'pixel', 'px']
         self.scale_pattern = re.compile(r'(\d+(?:\.\d+)?)\s*(' + '|'.join(self.scale_units) + ')', re.IGNORECASE)
         
-        # 扩展搜索参数
-        self.expansion_ratio = 3.0  # 扩展倍数
-        self.min_confidence = 0.1   # 扩展搜索时的最低置信度
+        # Expansion search parameters
+        self.expansion_ratio = 3.0  # Expansion multiplier
+        self.min_confidence = 0.1   # Minimum confidence for expanded search
         
-        print("✅ OCR引导的比例尺检测器初始化完成")
+        print(" OCR-guided scale bar detector initialized successfully")
         
     def detect_scale_text(self, image_path):
         """
-        检测图片中的比例尺文本
+        Detect scale bar text in image
         
         Args:
-            image_path: 图片路径
+            image_path: Path to image file
             
         Returns:
-            list: 检测到的文本区域列表，每个元素包含文本、位置、置信度
+            list: List of detected text regions, each containing text, location, and confidence
         """
-        print(f"🔍 OCR检测文本: {os.path.basename(image_path)}")
+        print(f" Detecting text with OCR: {os.path.basename(image_path)}")
         
-        # 使用mock_ocr进行文本检测
+        # Perform text detection using mock_ocr
         ocr_result = mock_ocr.process(image_path, self.access_token)
         
         if ocr_result.get("error_code", 0) != 0:
-            print(f"❌ OCR检测失败: {ocr_result.get('error_msg', 'Unknown error')}")
+            print(f" OCR detection failed: {ocr_result.get('error_msg', 'Unknown error')}")
             return []
         
         text_regions = []
@@ -64,32 +64,32 @@ class OCRGuidedScaleDetector:
             text = item.get("words", "")
             location = item.get("location", {})
             
-            # 检查是否包含比例尺模式
+            # Check if text matches scale bar pattern
             if self.scale_pattern.search(text):
-                # 确保位置信息完整
+                # Ensure complete location information
                 if all(key in location for key in ['left', 'top', 'width', 'height']):
                     text_regions.append({
                         'text': text,
                         'location': location,
-                        'confidence': 0.9  # OCR置信度
+                        'confidence': 0.9  # OCR confidence
                     })
-                    print(f"   ✅ 检测到比例尺文本: {text} 位置: {location}")
+                    print(f"    Detected scale bar text: {text} Location: {location}")
                 else:
-                    print(f"   ⚠️ 比例尺文本位置信息不完整: {text} 位置: {location}")
+                    print(f"    Incomplete location info for scale bar text: {text} Location: {location}")
         
-        print(f"   共检测到 {len(text_regions)} 个比例尺文本")
+        print(f"   Total scale bar texts detected: {len(text_regions)}")
         return text_regions
     
     def create_search_regions(self, image_path, text_regions):
         """
-        基于检测到的文本创建搜索区域
+        Create search regions based on detected text
         
         Args:
-            image_path: 图片路径
-            text_regions: 检测到的文本区域列表
+            image_path: Path to image file
+            text_regions: List of detected text regions
             
         Returns:
-            list: 扩展后的搜索区域列表
+            list: List of expanded search regions
         """
         image = cv2.imread(image_path)
         if image is None:
@@ -102,21 +102,21 @@ class OCRGuidedScaleDetector:
             location = region['location']
             text = region['text']
             
-            # 获取文本区域
+            # Get text region coordinates
             x1 = location['left']
             y1 = location['top']
             x2 = x1 + location['width']
             y2 = y1 + location['height']
             
-            # 计算扩展区域
+            # Calculate expanded region
             center_x = (x1 + x2) // 2
             center_y = (y1 + y2) // 2
             
-            # 扩展搜索区域
+            # Expand search region
             expanded_width = int(location['width'] * self.expansion_ratio)
             expanded_height = int(location['height'] * self.expansion_ratio)
             
-            # 确保不超出图片边界
+            # Ensure coordinates stay within image boundaries
             new_x1 = max(0, center_x - expanded_width // 2)
             new_y1 = max(0, center_y - expanded_height // 2)
             new_x2 = min(width, center_x + expanded_width // 2)
@@ -129,20 +129,20 @@ class OCRGuidedScaleDetector:
                 'original_location': location
             })
             
-            print(f"   创建搜索区域: [{new_x1}, {new_y1}, {new_x2}, {new_y2}] (基于文本: {text})")
+            print(f"   Created search region: [{new_x1}, {new_y1}, {new_x2}, {new_y2}] (Based on text: {text})")
         
         return search_regions
     
     def detect_scale_in_regions(self, image_path, search_regions):
         """
-        在指定区域内检测比例尺
+        Detect scale bars in specified regions
         
         Args:
-            image_path: 图片路径
-            search_regions: 搜索区域列表
+            image_path: Path to image file
+            search_regions: List of search regions
             
         Returns:
-            list: 检测结果列表
+            list: List of detection results
         """
         results = []
         
@@ -150,17 +150,17 @@ class OCRGuidedScaleDetector:
             region = region_info['region']
             x1, y1, x2, y2 = region
             
-            # 检查区域是否有效
+            # Check if region is valid
             if x1 >= x2 or y1 >= y2 or x1 < 0 or y1 < 0:
-                print(f"   ⚠️ 跳过无效搜索区域: [{x1}, {y1}, {x2}, {y2}]")
+                print(f"    Skipping invalid search region: [{x1}, {y1}, {x2}, {y2}]")
                 continue
             
-            # 裁剪图片区域
+            # Crop image region
             image = cv2.imread(image_path)
-        if image is None:
+            if image is None:
                 continue
             
-            # 确保不超出图片边界
+            # Ensure coordinates stay within image boundaries
             height, width = image.shape[:2]
             x1 = max(0, min(x1, width-1))
             y1 = max(0, min(y1, height-1))
@@ -169,23 +169,23 @@ class OCRGuidedScaleDetector:
             
             cropped_image = image[y1:y2, x1:x2]
             
-            # 检查裁剪图片是否有效
+            # Check if cropped image is valid
             if cropped_image.size == 0:
-                print(f"   ⚠️ 裁剪图片无效: [{x1}, {y1}, {x2}, {y2}]")
+                print(f"    Invalid cropped image: [{x1}, {y1}, {x2}, {y2}]")
                 continue
             
-            # 保存临时裁剪图片
+            # Save temporary cropped image
             temp_path = f"temp_crop_{x1}_{y1}.jpg"
             cv2.imwrite(temp_path, cropped_image)
             
             try:
-                # 在裁剪区域中检测
+                # Detect in cropped region
                 crop_results = self.model.predict(temp_path, conf=self.min_confidence, verbose=False)
                 
                 if len(crop_results) > 0 and len(crop_results[0].boxes) > 0:
-                    # 获取检测结果并转换回原图坐标
+                    # Get detection results and convert back to original image coordinates
                     for box in crop_results[0].boxes.xyxy:
-                        # 转换坐标
+                        # Convert coordinates
                         crop_x1, crop_y1, crop_x2, crop_y2 = box.cpu().numpy()
                         orig_x1 = x1 + crop_x1
                         orig_y1 = y1 + crop_y1
@@ -201,7 +201,7 @@ class OCRGuidedScaleDetector:
                         })
                 
             finally:
-                # 删除临时文件
+                # Delete temporary file
                 if os.path.exists(temp_path):
                     os.remove(temp_path)
         
@@ -209,14 +209,14 @@ class OCRGuidedScaleDetector:
     
     def detect_scale_full_image(self, image_path, conf=0.2):
         """
-        在全图中检测比例尺（作为备选方案）
+        Detect scale bars in full image (as fallback option)
         
         Args:
-            image_path: 图片路径
-            conf: 置信度阈值
+            image_path: Path to image file
+            conf: Confidence threshold
             
         Returns:
-            list: 检测结果列表
+            list: List of detection results
         """
         results = self.model.predict(image_path, conf=conf, verbose=False)
         
@@ -235,32 +235,32 @@ class OCRGuidedScaleDetector:
     
     def detect_scale_hybrid(self, image_path, conf=0.2):
         """
-        混合检测策略：先OCR引导，再全图检测
+        Hybrid detection strategy: OCR-guided first, then full image detection
         
         Args:
-            image_path: 图片路径
-            conf: 置信度阈值
+            image_path: Path to image file
+            conf: Confidence threshold
             
         Returns:
-            dict: 检测结果
+            dict: Detection results
         """
-        print(f"🔍 混合检测图片: {os.path.basename(image_path)}")
+        print(f" Hybrid detection for image: {os.path.basename(image_path)}")
         
-        # 1. OCR检测文本
+        # 1. Detect text with OCR
         text_regions = self.detect_scale_text(image_path)
         
-        # 2. 创建搜索区域
+        # 2. Create search regions
         search_regions = self.create_search_regions(image_path, text_regions)
         
-        # 3. 在搜索区域中检测
+        # 3. Detect in search regions
         ocr_guided_results = self.detect_scale_in_regions(image_path, search_regions)
-        print(f"   OCR引导检测到 {len(ocr_guided_results)} 个比例尺")
+        print(f"   OCR-guided detection found {len(ocr_guided_results)} scale bars")
         
-        # 4. 全图检测（备选）
+        # 4. Full image detection (fallback)
         full_image_results = self.detect_scale_full_image(image_path, conf)
-        print(f"   全图检测到 {len(full_image_results)} 个比例尺")
+        print(f"   Full image detection found {len(full_image_results)} scale bars")
         
-        # 5. 合并结果（优先OCR引导的结果）
+        # 5. Merge results (prioritize OCR-guided results)
         final_results = ocr_guided_results + full_image_results
         
         return {
@@ -275,11 +275,11 @@ class OCRGuidedScaleDetector:
     
     def visualize_results(self, detection_result, output_path=None):
         """
-        可视化检测结果
+        Visualize detection results
         
         Args:
-            detection_result: 检测结果
-            output_path: 输出图片路径
+            detection_result: Detection results dictionary
+            output_path: Output image path
         """
         image = cv2.imread(detection_result['image_path'])
         if image is None:
@@ -287,99 +287,99 @@ class OCRGuidedScaleDetector:
         
         vis_image = image.copy()
         
-        # 绘制文本区域
+        # Draw text regions
         for region in detection_result['text_regions']:
             loc = region['location']
             x1, y1, x2, y2 = loc['left'], loc['top'], loc['left'] + loc['width'], loc['top'] + loc['height']
-            cv2.rectangle(vis_image, (x1, y1), (x2, y2), (255, 0, 0), 2)  # 蓝色：文本区域
+            cv2.rectangle(vis_image, (x1, y1), (x2, y2), (255, 0, 0), 2)  # Blue: text regions
             cv2.putText(vis_image, region['text'], (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
         
-        # 绘制搜索区域
+        # Draw search regions
         for region_info in detection_result['search_regions']:
             x1, y1, x2, y2 = region_info['region']
-            cv2.rectangle(vis_image, (x1, y1), (x2, y2), (0, 255, 255), 1)  # 黄色：搜索区域
+            cv2.rectangle(vis_image, (x1, y1), (x2, y2), (0, 255, 255), 1)  # Yellow: search regions
         
-        # 绘制检测结果
+        # Draw detection results
         for result in detection_result['final_results']:
             x1, y1, x2, y2 = map(int, result['bbox'])
             
-            # 根据检测方法选择颜色
+            # Select color based on detection method
             if result['detection_method'] == 'ocr_guided':
-                color = (0, 255, 0)  # 绿色：OCR引导检测
+                color = (0, 255, 0)  # Green: OCR-guided detection
             else:
-                color = (0, 0, 255)  # 红色：全图检测
+                color = (0, 0, 255)  # Red: full image detection
             
             cv2.rectangle(vis_image, (x1, y1), (x2, y2), color, 2)
-            cv2.circle(vis_image, (x1, y1), 3, color, -1)  # 端点1
-            cv2.circle(vis_image, (x2, y2), 3, color, -1)  # 端点2
+            cv2.circle(vis_image, (x1, y1), 3, color, -1)  # Endpoint 1
+            cv2.circle(vis_image, (x2, y2), 3, color, -1)  # Endpoint 2
             
-            # 添加文本信息
+            # Add text information
             text = f"{result['text']} ({result['detection_method']})"
             cv2.putText(vis_image, text, (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
         
-        # 保存结果
+        # Save results
         if output_path:
             cv2.imwrite(output_path, vis_image)
-            print(f"✅ 可视化结果已保存: {output_path}")
+            print(f" Visualization results saved to: {output_path}")
         
         return vis_image
 
 def test_ocr_guided_detector():
-    """测试OCR引导的检测器"""
-    print("🧪 测试OCR引导的比例尺检测器")
+    """Test OCR-guided detector"""
+    print(" Testing OCR-guided Scale Bar Detector")
     print("="*60)
     
-    # 配置
+    # Configuration
     model_path = "weights/epoch80.pt"
     images_dir = "inputs/lizi/images"
     output_dir = "ocr_guided_detection"
     
-    # 创建输出目录
+    # Create output directory
     os.makedirs(output_dir, exist_ok=True)
     
-    # 初始化检测器
+    # Initialize detector
     detector = OCRGuidedScaleDetector(model_path)
     
-    # 测试几张图片
+    # Test images
     test_images = ['100.png', '238.png', '318.png', '159.png']
     
     for img_name in test_images:
         img_path = os.path.join(images_dir, img_name)
         
         if not os.path.exists(img_path):
-            print(f"❌ 图片不存在: {img_path}")
+            print(f" Image does not exist: {img_path}")
             continue
         
-        print(f"\n📸 处理图片: {img_name}")
+        print(f"\n Processing image: {img_name}")
         
-        # 执行混合检测
+        # Perform hybrid detection
         result = detector.detect_scale_hybrid(img_path, conf=0.2)
         
-        # 可视化结果
+        # Visualize results
         output_path = os.path.join(output_dir, f"{img_name.replace('.png', '')}_ocr_guided.png")
         detector.visualize_results(result, output_path)
         
-        print(f"   总检测数: {result['total_detections']}")
-        print(f"   OCR引导检测: {len(result['ocr_guided_results'])}")
-        print(f"   全图检测: {len(result['full_image_results'])}")
+        print(f"   Total detections: {result['total_detections']}")
+        print(f"   OCR-guided detections: {len(result['ocr_guided_results'])}")
+        print(f"   Full image detections: {len(result['full_image_results'])}")
 
 def test_missed_images():
-    """测试之前未检测到的图片"""
-    print("🧪 测试之前未检测到的图片")
+    """Test images that were previously undetected"""
+    print(" Testing Previously Undetected Images")
     print("="*60)
     
-    # 配置
+    # Configuration
     model_path = "weights/epoch80.pt"
     images_dir = "inputs/lizi/images"
     output_dir = "ocr_guided_missed_detection"
     
-    # 创建输出目录
+    # Create output directory
     os.makedirs(output_dir, exist_ok=True)
     
-    # 初始化检测器
+    # Initialize detector
     detector = OCRGuidedScaleDetector(model_path)
     
-    # 之前未检测到的图片
+    # Images that were previously undetected
     missed_images = ['87.png', '167.png', '248.png', '271.png', '298.png', '299.png', 
                     '338.png', '391.png', '393.png', '398.png', '405.png', '451.png']
     
@@ -387,25 +387,25 @@ def test_missed_images():
         img_path = os.path.join(images_dir, img_name)
         
         if not os.path.exists(img_path):
-            print(f"❌ 图片不存在: {img_path}")
+            print(f" Image does not exist: {img_path}")
             continue
         
-        print(f"\n📸 处理未检测图片: {img_name}")
+        print(f"\n Processing undetected image: {img_name}")
         
-        # 执行混合检测
-        result = detector.detect_scale_hybrid(img_path, conf=0.1)  # 使用更低的置信度
+        # Perform hybrid detection with lower confidence threshold
+        result = detector.detect_scale_hybrid(img_path, conf=0.1)
         
-        # 可视化结果
+        # Visualize results
         output_path = os.path.join(output_dir, f"{img_name.replace('.png', '')}_ocr_guided.png")
         detector.visualize_results(result, output_path)
         
-        print(f"   总检测数: {result['total_detections']}")
-        print(f"   OCR引导检测: {len(result['ocr_guided_results'])}")
-        print(f"   全图检测: {len(result['full_image_results'])}")
+        print(f"   Total detections: {result['total_detections']}")
+        print(f"   OCR-guided detections: {len(result['ocr_guided_results'])}")
+        print(f"   Full image detections: {len(result['full_image_results'])}")
 
 if __name__ == '__main__':
-    # 测试常规图片
+    # Test regular images
     test_ocr_guided_detector()
     
-    # 测试之前未检测到的图片
+    # Test previously undetected images
     test_missed_images()
