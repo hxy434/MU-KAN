@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-计算真实的相对误差
-使用scale_bar_labels_fixed.csv中的真实坐标
+Calculate true relative error
+Using ground truth coordinates from scale_bar_labels_fixed.csv
 """
 
 import pandas as pd
@@ -11,29 +11,29 @@ import matplotlib.pyplot as plt
 import os
 
 def calculate_real_error():
-    """计算真实的相对误差"""
+    """Calculate true relative error"""
     
-    print("🔍 开始计算真实的相对误差...")
+    print(" Starting to calculate true relative error...")
     
-    # 读取预测结果
+    # Read prediction results
     pred_df = pd.read_csv('scale_endpoints_data.csv')
-    print(f"📊 预测数据: {len(pred_df)} 条记录")
+    print(f" Prediction data: {len(pred_df)} records")
     
-    # 读取真实标签
+    # Read ground truth labels
     gt_df = pd.read_csv('scale_bar_labels_fixed.csv')
-    print(f"📊 真实标签: {len(gt_df)} 条记录")
+    print(f" Ground truth labels: {len(gt_df)} records")
     
-    # 计算真实标签的长度
+    # Calculate actual length from ground truth labels
     gt_df['true_length'] = np.sqrt((gt_df['x2'] - gt_df['x1'])**2 + (gt_df['y2'] - gt_df['y1'])**2)
     
-    # 创建结果列表
+    # Create results list
     error_results = []
     
     for idx, pred_row in pred_df.iterrows():
         image_name = pred_row['image_name']
         
-        # 在真实标签中查找对应的图片
-        # 预测文件中的图片名称是数字，真实标签中是带.png后缀的
+        # Find corresponding image in ground truth labels
+        # Image names in prediction file are numbers, while in ground truth are with .png suffix
         gt_match = gt_df[gt_df['filename'] == f"{int(image_name)}.png"]
         
         if len(gt_match) > 0:
@@ -41,7 +41,7 @@ def calculate_real_error():
             true_length = gt_row['true_length']
             pred_length = pred_row['predicted_length']
             
-            # 计算相对误差
+            # Calculate relative error
             if true_length > 0:
                 relative_error = abs(pred_length - true_length) / true_length * 100
             else:
@@ -58,59 +58,59 @@ def calculate_real_error():
                 'true_coords': (gt_row['x1'], gt_row['y1'], gt_row['x2'], gt_row['y2'])
             })
         else:
-            print(f"⚠️ 未找到图片 {image_name} 的真实标签")
+            print(f" Ground truth label not found for image {image_name}")
     
-    # 转换为DataFrame
+    # Convert to DataFrame
     error_df = pd.DataFrame(error_results)
     
     if len(error_df) == 0:
-        print("❌ 没有找到匹配的数据")
+        print(" No matching data found")
         return
     
-    print(f"✅ 成功匹配: {len(error_df)} 条记录")
+    print(f" Successfully matched: {len(error_df)} records")
     
-    # 计算统计信息
+    # Calculate statistical information
     avg_error = error_df['relative_error_percent'].mean()
     median_error = error_df['relative_error_percent'].median()
     max_error = error_df['relative_error_percent'].max()
     min_error = error_df['relative_error_percent'].min()
     std_error = error_df['relative_error_percent'].std()
     
-    # 误差分布统计
+    # Error distribution statistics
     error_under_5 = len(error_df[error_df['relative_error_percent'] <= 5])
     error_under_10 = len(error_df[error_df['relative_error_percent'] <= 10])
     error_under_20 = len(error_df[error_df['relative_error_percent'] <= 20])
     
-    print("\n🎯 真实相对误差统计报告")
+    print("\n True Relative Error Statistical Report")
     print("="*60)
-    print(f"📊 基础统计:")
-    print(f"   • 有效样本数: {len(error_df)}")
-    print(f"   • 平均相对误差: {avg_error:.2f}%")
-    print(f"   • 中位相对误差: {median_error:.2f}%")
-    print(f"   • 最大相对误差: {max_error:.2f}%")
-    print(f"   • 最小相对误差: {min_error:.2f}%")
-    print(f"   • 误差标准差: {std_error:.2f}%")
+    print(f" Basic Statistics:")
+    print(f"   • Number of valid samples: {len(error_df)}")
+    print(f"   • Average relative error: {avg_error:.2f}%")
+    print(f"   • Median relative error: {median_error:.2f}%")
+    print(f"   • Maximum relative error: {max_error:.2f}%")
+    print(f"   • Minimum relative error: {min_error:.2f}%")
+    print(f"   • Standard deviation of error: {std_error:.2f}%")
     print("")
-    print(f"🎯 误差分布:")
-    print(f"   • ≤5% 误差: {error_under_5}/{len(error_df)} ({error_under_5/len(error_df)*100:.1f}%)")
-    print(f"   • ≤10% 误差: {error_under_10}/{len(error_df)} ({error_under_10/len(error_df)*100:.1f}%)")
-    print(f"   • ≤20% 误差: {error_under_20}/{len(error_df)} ({error_under_20/len(error_df)*100:.1f}%)")
+    print(f" Error Distribution:")
+    print(f"   • ≤5% error: {error_under_5}/{len(error_df)} ({error_under_5/len(error_df)*100:.1f}%)")
+    print(f"   • ≤10% error: {error_under_10}/{len(error_df)} ({error_under_10/len(error_df)*100:.1f}%)")
+    print(f"   • ≤20% error: {error_under_20/len(error_df)*100:.1f}%)")
     print("="*60)
     
-    # 保存详细结果
+    # Save detailed results
     output_file = 'real_error_analysis.csv'
     error_df.to_csv(output_file, index=False)
-    print(f"📄 详细误差分析保存: {output_file}")
+    print(f" Detailed error analysis saved to: {output_file}")
     
-    # 创建可视化
+    # Create visualization
     create_error_visualization(error_df)
     
-    # 按误差从高到低排序
+    # Sort by error from high to low
     error_df_sorted = error_df.sort_values('relative_error_percent', ascending=False)
     
-    print("\n📊 误差从高到低排序 (前20名):")
+    print("\n Errors Sorted from Highest to Lowest (Top 20):")
     print("="*90)
-    print(f"{'排名':<6} {'图片名':<10} {'预测长度':<12} {'真实长度':<12} {'相对误差':<12} {'绝对误差':<12}")
+    print(f"{'Rank':<6} {'Image Name':<10} {'Pred Length':<12} {'True Length':<12} {'Rel Error':<12} {'Abs Error':<12}")
     print("-"*90)
     
     for i, (idx, row) in enumerate(error_df_sorted.head(20).iterrows(), 1):
@@ -119,35 +119,35 @@ def calculate_real_error():
     
     print("-"*90)
     
-    # 显示最佳和最差的结果
-    print("\n🏆 最佳预测 (误差最小):")
+    # Show best and worst results
+    print("\n Best Prediction (Minimum Error):")
     best_idx = error_df['relative_error_percent'].idxmin()
     best_row = error_df.loc[best_idx]
-    print(f"   图片: {best_row['image_name']}")
-    print(f"   预测长度: {best_row['predicted_length']:.1f}px")
-    print(f"   真实长度: {best_row['true_length']:.1f}px")
-    print(f"   相对误差: {best_row['relative_error_percent']:.2f}%")
+    print(f"   Image: {best_row['image_name']}")
+    print(f"   Predicted length: {best_row['predicted_length']:.1f}px")
+    print(f"   True length: {best_row['true_length']:.1f}px")
+    print(f"   Relative error: {best_row['relative_error_percent']:.2f}%")
     
-    print("\n❌ 最差预测 (误差最大):")
+    print("\n Worst Prediction (Maximum Error):")
     worst_idx = error_df['relative_error_percent'].idxmax()
     worst_row = error_df.loc[worst_idx]
-    print(f"   图片: {worst_row['image_name']}")
-    print(f"   预测长度: {worst_row['predicted_length']:.1f}px")
-    print(f"   真实长度: {worst_row['true_length']:.1f}px")
-    print(f"   相对误差: {worst_row['relative_error_percent']:.2f}%")
+    print(f"   Image: {worst_row['image_name']}")
+    print(f"   Predicted length: {worst_row['predicted_length']:.1f}px")
+    print(f"   True length: {worst_row['true_length']:.1f}px")
+    print(f"   Relative error: {worst_row['relative_error_percent']:.2f}%")
     
-    # 保存排序后的结果
+    # Save sorted results
     sorted_output_file = 'real_error_analysis_sorted.csv'
     error_df_sorted.to_csv(sorted_output_file, index=False)
-    print(f"\n📄 排序后的误差分析保存: {sorted_output_file}")
+    print(f"\n Sorted error analysis saved to: {sorted_output_file}")
     
-    # 列出相对误差最大的十个文件
-    print("\n🔴 相对误差最大的十张图片:")
+    # List top 10 images with largest relative error
+    print("\n Top 10 Images with Largest Relative Error:")
     print("="*90)
-    print(f"{'排名':<6} {'图片名':<10} {'预测长度':<12} {'真实长度':<12} {'相对误差':<12} {'绝对误差':<12}")
+    print(f"{'Rank':<6} {'Image Name':<10} {'Pred Length':<12} {'True Length':<12} {'Rel Error':<12} {'Abs Error':<12}")
     print("-"*90)
     
-    # 按相对误差从高到低排序，找出误差最大的十张图片
+    # Sort by relative error from high to low to find top 10 largest errors
     largest_error_sorted = error_df.sort_values('relative_error_percent', ascending=False)
     
     for i, (idx, row) in enumerate(largest_error_sorted.head(10).iterrows(), 1):
@@ -155,25 +155,25 @@ def calculate_real_error():
               f"{row['relative_error_percent']:<12.2f}% {row['absolute_error']:<12.1f}")
     
     print("-"*90)
-    print(f"📊 最大误差: {largest_error_sorted['relative_error_percent'].max():.2f}%")
-    print(f"📊 最小误差: {largest_error_sorted['relative_error_percent'].min():.2f}%")
+    print(f" Maximum error: {largest_error_sorted['relative_error_percent'].max():.2f}%")
+    print(f" Minimum error: {largest_error_sorted['relative_error_percent'].min():.2f}%")
     
-    # 保存最大误差分析
+    # Save largest error analysis
     largest_error_output_file = 'largest_error_analysis.csv'
     largest_error_sorted.to_csv(largest_error_output_file, index=False)
-    print(f"📄 最大误差分析保存: {largest_error_output_file}")
+    print(f" Largest error analysis saved to: {largest_error_output_file}")
     
-    # 列出相对误差相差最大的十个文件（与平均误差的差值）
-    print("\n🔥 相对误差相差最大的十个文件（与平均误差的差值）:")
+    # List top 10 files with largest error difference (vs average error)
+    print("\n Top 10 Files with Largest Error Difference (vs Average Error):")
     print("="*90)
-    print(f"{'排名':<6} {'图片名':<10} {'预测长度':<12} {'真实长度':<12} {'相对误差':<12} {'误差差值':<12}")
+    print(f"{'Rank':<6} {'Image Name':<10} {'Pred Length':<12} {'True Length':<12} {'Rel Error':<12} {'Error Diff':<12}")
     print("-"*90)
     
-    # 计算误差差值（与平均误差的差值）
+    # Calculate error difference (difference from average error)
     mean_error = error_df['relative_error_percent'].mean()
     error_df_sorted['error_diff'] = abs(error_df_sorted['relative_error_percent'] - mean_error)
     
-    # 按误差差值排序，找出与平均误差相差最大的
+    # Sort by error difference to find largest deviations from average
     error_diff_sorted = error_df_sorted.sort_values('error_diff', ascending=False)
     
     for i, (idx, row) in enumerate(error_diff_sorted.head(10).iterrows(), 1):
@@ -182,60 +182,59 @@ def calculate_real_error():
               f"{row['relative_error_percent']:<12.2f}% {error_diff:<12.2f}%")
     
     print("-"*90)
-    print(f"📊 平均误差: {mean_error:.2f}%")
-    print(f"📊 误差差值范围: {error_diff_sorted['error_diff'].min():.2f}% - {error_diff_sorted['error_diff'].max():.2f}%")
+    print(f" Average error: {mean_error:.2f}%")
+    print(f" Error difference range: {error_diff_sorted['error_diff'].min():.2f}% - {error_diff_sorted['error_diff'].max():.2f}%")
     
-    # 保存误差差值分析
+    # Save error difference analysis
     error_diff_output_file = 'error_difference_analysis.csv'
     error_diff_sorted.to_csv(error_diff_output_file, index=False)
-    print(f"📄 误差差值分析保存: {error_diff_output_file}")
+    print(f" Error difference analysis saved to: {error_diff_output_file}")
     
     return error_df
 
 def create_error_visualization(error_df):
-    """创建误差可视化图表"""
+    """Create error visualization charts"""
     
-    # 设置中文字体
-    plt.rcParams['font.sans-serif'] = ['SimHei', 'DejaVu Sans']
+    # Set font (removed Chinese font config as all labels are now English)
     plt.rcParams['axes.unicode_minus'] = False
     
-    # 创建子图
+    # Create subplots
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 12))
-    fig.suptitle('比例尺长度预测误差分析', fontsize=16, fontweight='bold')
+    fig.suptitle('Scale Bar Length Prediction Error Analysis', fontsize=16, fontweight='bold')
     
-    # 子图1: 预测vs真实长度散点图
+    # Subplot 1: Predicted vs True Length scatter plot
     ax1.scatter(error_df['true_length'], error_df['predicted_length'], alpha=0.6, color='blue')
     ax1.plot([error_df['true_length'].min(), error_df['true_length'].max()], 
              [error_df['true_length'].min(), error_df['true_length'].max()], 
-             'r--', label='完美预测线')
-    ax1.set_xlabel('真实长度 (像素)')
-    ax1.set_ylabel('预测长度 (像素)')
-    ax1.set_title('预测长度 vs 真实长度')
+             'r--', label='Perfect Prediction Line')
+    ax1.set_xlabel('True Length (pixels)')
+    ax1.set_ylabel('Predicted Length (pixels)')
+    ax1.set_title('Predicted Length vs True Length')
     ax1.legend()
     ax1.grid(True, alpha=0.3)
     
-    # 子图2: 相对误差分布直方图
+    # Subplot 2: Relative Error distribution histogram
     ax2.hist(error_df['relative_error_percent'], bins=20, alpha=0.7, color='green', edgecolor='black')
     ax2.axvline(error_df['relative_error_percent'].mean(), color='red', linestyle='--', 
-                label=f'平均误差: {error_df["relative_error_percent"].mean():.1f}%')
-    ax2.set_xlabel('相对误差 (%)')
-    ax2.set_ylabel('频次')
-    ax2.set_title('相对误差分布')
+                label=f'Average Error: {error_df["relative_error_percent"].mean():.1f}%')
+    ax2.set_xlabel('Relative Error (%)')
+    ax2.set_ylabel('Frequency')
+    ax2.set_title('Relative Error Distribution')
     ax2.legend()
     ax2.grid(True, alpha=0.3)
     
-    # 子图3: 相对误差按图片排序
+    # Subplot 3: Relative Error by image index
     image_indices = range(1, len(error_df) + 1)
     ax3.plot(image_indices, error_df['relative_error_percent'], 'b-o', markersize=4)
-    ax3.axhline(y=5, color='orange', linestyle='--', label='5%误差线', alpha=0.7)
-    ax3.axhline(y=10, color='red', linestyle='--', label='10%误差线', alpha=0.7)
-    ax3.set_xlabel('图片序号')
-    ax3.set_ylabel('相对误差 (%)')
-    ax3.set_title('相对误差变化')
+    ax3.axhline(y=5, color='orange', linestyle='--', label='5% Error Line', alpha=0.7)
+    ax3.axhline(y=10, color='red', linestyle='--', label='10% Error Line', alpha=0.7)
+    ax3.set_xlabel('Image Index')
+    ax3.set_ylabel('Relative Error (%)')
+    ax3.set_title('Relative Error Variation')
     ax3.legend()
     ax3.grid(True, alpha=0.3)
     
-    # 子图4: 误差分布饼图
+    # Subplot 4: Error distribution pie chart
     error_ranges = [
         len(error_df[error_df['relative_error_percent'] <= 5]),
         len(error_df[(error_df['relative_error_percent'] > 5) & (error_df['relative_error_percent'] <= 10)]),
@@ -246,13 +245,13 @@ def create_error_visualization(error_df):
     colors = ['green', 'yellow', 'orange', 'red']
     
     ax4.pie(error_ranges, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90)
-    ax4.set_title('误差分布比例')
+    ax4.set_title('Error Distribution Ratio')
     
     plt.tight_layout()
     
-    # 保存图表
+    # Save chart
     plt.savefig('real_error_analysis.png', dpi=300, bbox_inches='tight')
-    print("📊 误差分析图表保存: real_error_analysis.png")
+    print(" Error analysis chart saved to: real_error_analysis.png")
     plt.show()
 
 if __name__ == '__main__':
