@@ -155,7 +155,7 @@ def train(config, train_loader, model, criterion, optimizer):
                 loss += criterion(output, target)
             loss /= len(outputs)
 
-            # 使用独立的指标计算函数
+           
             iou = iou_score_s(outputs[-1], target)
             dice = dice_coef_s(outputs[-1], target)
             recall = recall_s(outputs[-1], target)
@@ -172,7 +172,7 @@ def train(config, train_loader, model, criterion, optimizer):
             output = model(input)
             loss = criterion(output, target)
             
-            # 使用独立的指标计算函数
+          
             iou = iou_score_s(output, target)
             dice = dice_coef_s(output, target)
             recall = recall_s(output, target)
@@ -246,7 +246,7 @@ def validate(config, val_loader, model, criterion):
             input = input.cuda()
             target = target.cuda()
 
-            # 已移除调试信息
+            
 
             # compute output
             if config['deep_supervision']:
@@ -256,7 +256,7 @@ def validate(config, val_loader, model, criterion):
                     loss += criterion(output, target)
                 loss /= len(outputs)
                 
-                # 使用独立的指标计算函数
+                
                 iou = iou_score_s(outputs[-1], target)
                 dice = dice_coef_s(outputs[-1], target)
                 recall = recall_s(outputs[-1], target)
@@ -272,7 +272,7 @@ def validate(config, val_loader, model, criterion):
                 output = model(input)
                 loss = criterion(output, target)
                 
-                # 使用独立的指标计算函数
+                
                 iou = iou_score_s(output, target)
                 dice = dice_coef_s(output, target)
                 recall = recall_s(output, target)
@@ -416,7 +416,7 @@ def main():
     elif dataset_name == 'glas':
         mask_ext = '.png'
  
-    # 根据数据集类型选择合适的 Normalize
+ 
     if config.get('data_format', 'folder') == 'npz':
         train_transform = Compose([
             RandomRotate90(),
@@ -429,11 +429,11 @@ def main():
                 A.HorizontalFlip(),
                 A.VerticalFlip(),
                 Resize(config['input_h'], config['input_w']),
-                # 不加 norm_transform
+         
             ])
         val_transform = Compose([
             Resize(config['input_h'], config['input_w']),
-            # 不加 norm_transform
+    
         ])
     else:
         RGB_MEAN = (0.485, 0.456, 0.406)
@@ -506,7 +506,7 @@ def main():
         img_ext = config.get('img_ext', '.png')
         mask_ext = config.get('mask_ext', '.png')
 
-    # 后续Dataset初始化
+
     if config['dataset'] == 'lizi_from_npz':
         train_dataset = Dataset(
             img_ids=train_img_ids,
