@@ -1,7 +1,7 @@
 # MU-KAN: An End-to-End Framework for Robust Nanoparticle Segmentation and Automated Size Measurement in SEM Images
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This repository contains the official implementation of the paper **MU-KAN: An End-to-End Framework for Robust Nanoparticle Segmentation and Automated Size Measurement in SEM Images**. MU-KAN is a Multi-scale U-Net Kolmogorov–Arnold Network tailored for accurate nanoparticle boundary extraction in SEM images under challenging conditions (severe noise, low contrast, particle overlap/agglomeration), integrated with an automatic scale recovery module for pixel-to-physical unit conversion and automated particle size distribution analysis.
+This repository contains the official implementation of the RSC Advances paper **Automated SEM-Based Nanoparticle Metrology for Materials Characterization via Segmentation and Robust Scale-Bar Recognition**. MU-KAN is a Multi-scale U-Net Kolmogorov–Arnold Network tailored for accurate nanoparticle boundary extraction in SEM images under challenging conditions (severe noise, low contrast, particle overlap/agglomeration), integrated with an automatic scale recovery module for pixel-to-physical unit conversion and automated particle size distribution analysis.
 
 ## Key Features
 - **Robust Semantic Segmentation**: Fuses Moga Block-based multi-scale feature encoding and KAN-driven nonlinear modeling to boost boundary detection accuracy for noisy, low-contrast, and overlapped nanoparticle SEM images.
