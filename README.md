@@ -1,4 +1,4 @@
-# MU-KAN: An End-to-End Framework for Robust Nanoparticle Segmentation and Automated Size Measurement in SEM Images
+# Automated SEM-Based Nanoparticle Metrology for Materials Characterization via Segmentation and Robust Scale-Bar Recognition
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 This repository contains the official implementation of the RSC Advances paper **Automated SEM-Based Nanoparticle Metrology for Materials Characterization via Segmentation and Robust Scale-Bar Recognition**. MU-KAN is a Multi-scale U-Net Kolmogorov–Arnold Network tailored for accurate nanoparticle boundary extraction in SEM images under challenging conditions (severe noise, low contrast, particle overlap/agglomeration), integrated with an automatic scale recovery module for pixel-to-physical unit conversion and automated particle size distribution analysis.
@@ -180,6 +180,6 @@ We thank the authors of U-Net, KAN, YOLOv11, and other open-source projects for 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
 ## Contact
-For questions, issues, or collaboration requests, please contact the project maintainers via the GitHub Issues page or the official email address in the paper.
+For questions, issues, or collaboration requests, please contact the project maintainers via the GitHub Issues page or the official email address in the paper(2023217451@mail.hfut.edu.cn).
 
 Issues and pull requests are warmly welcome!
